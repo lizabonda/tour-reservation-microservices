@@ -4,12 +4,13 @@ import cz.cvut.fel.nss.accommodation.Accommodation;
 import cz.cvut.fel.nss.accommodation.MealPlan;
 import cz.cvut.fel.nss.accommodation.Reservation;
 import cz.cvut.fel.nss.accommodation.dao.AccommodationDao;
+import cz.cvut.fel.nss.accommodation.dao.ReservationDao;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,11 @@ public class AccommodationService {
     private static final double ALL_INCLUSIVE_PERCENT = 0.15;
 
     private final AccommodationDao accommodationDao;
+    private final ReservationDao reservationDao;
 
-    public AccommodationService(AccommodationDao accommodationDao) {
+    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao) {
         this.accommodationDao = accommodationDao;
+        this.reservationDao = reservationDao;
     }
 
     public AccommodationPricingSummaryDto calculatePrice(List<ReservationDto> reservationsDto) {
@@ -49,8 +52,8 @@ public class AccommodationService {
             }
 
             Reservation reservation = new Reservation();
-            reservation.setStartDate(reservationDto.startDate().atStartOfDay());
-            reservation.setEndDate(reservationDto.endDate().atStartOfDay());
+            reservation.setStartDate(reservationDto.startDate());
+            reservation.setEndDate(reservationDto.endDate());
             reservation.setAccommodation(accommodation);
             reservation.calculateReservationPrice();
 
@@ -64,8 +67,11 @@ public class AccommodationService {
         return new AccommodationPricingSummaryDto(accommodationPrice, allInclusiveCharge);
     }
 
-    private List<Reservation> createReservations(List<ReservationDto> reservationsDto, Booking booking) {
+    public List<Reservation> createReservations(List<ReservationDto> reservationsDto, Long bookingId) {
         final List<Reservation> reservations = new ArrayList<>(reservationsDto.size());
+        if (bookingId == null) {
+            throw new IllegalArgumentException("Booking id must not be null");
+        }
         for (ReservationDto reservationDto : reservationsDto) {
             if (reservationDto == null) {
                 throw new IllegalArgumentException("Reservation must not be null");
@@ -91,28 +97,30 @@ public class AccommodationService {
                 throw new NotFoundException("Accommodation not found: " + reservationDto.accommodation().id());
             }
 
-            final LocalDateTime startDateTime = reservationDto.startDate().atStartOfDay();
-            final LocalDateTime endDateTime = reservationDto.endDate().atStartOfDay();
+            final LocalDate startDate = reservationDto.startDate();
+            final LocalDate endDate = reservationDto.endDate();
             final Reservation reservation = new Reservation();
-            reservation.setStartDate(startDateTime);
-            reservation.setEndDate(endDateTime);
+            reservation.setStartDate(startDate);
+            reservation.setEndDate(endDate);
             reservation.setAccommodation(accommodation);
+            reservation.setBookingId(bookingId);
             reservation.calculateReservationPrice();
-            reservation.setBooking(booking);
+            validationForReservation(reservation);
+            reservationDao.save(reservation);
             reservations.add(reservation);
         }
         return reservations;
     }
 
-    private void validationForReservation(Booking booking, Reservation r) {
+    private void validationForReservation(Reservation r) {
         if (r.getAccommodation() == null) {
             throw new IllegalArgumentException("Reservation must have accommodation");
         }
         if (r.getStartDate() == null || r.getEndDate() == null) {
             throw new IllegalArgumentException("Reservation must have startDate and endDate");
         }
-        if (r.getBooking() == null) {
-            r.setBooking(booking);
+        if (!r.getEndDate().isAfter(r.getStartDate())) {
+            throw new IllegalArgumentException("Reservation endDate must be after startDate");
         }
 
         List<Reservation> intersection = reservationDao.findIntersection(
@@ -129,13 +137,12 @@ public class AccommodationService {
 
         Reservation r = reservationDao.find(reservationId);
         if (r == null) {
-            throw new IllegalArgumentException("Reservation not found");
+            throw new NotFoundException("Reservation not found: " + reservationId);
         }
-        Booking booking= r.getBooking();
 
         Accommodation newAccommodation= accommodationDao.find(newaccommodationId);
         if (newAccommodation == null) {
-            throw new IllegalArgumentException("Accommodation not found");
+            throw new NotFoundException("Accommodation not found: " + newaccommodationId);
         }
 
         List<Reservation> intersection= reservationDao.findIntersection(newaccommodationId, r.getStartDate(),r.getEndDate());
@@ -153,8 +160,7 @@ public class AccommodationService {
 
         r.setAccommodation(newAccommodation);
         r.calculateReservationPrice();
-        booking.saveTotalPrice();
-        bookingDao.save(booking);
+        reservationDao.update(r);
     }
 
 

@@ -1,11 +1,11 @@
 package cz.cvut.fel.nss.accommodation.dao;
 
-import cz.cvut.fel.nss.projekt.model.Reservation;
+import cz.cvut.fel.nss.accommodation.Reservation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +50,7 @@ public class ReservationDao implements GenericDao<Reservation> {
         }
     }
 
-    public List<Reservation> findIntersection(Long accommodationId, LocalDateTime from, LocalDateTime to) {
+    public List<Reservation> findIntersection(Long accommodationId, LocalDate from, LocalDate to) {
         return em.createNamedQuery("Reservation.findIntersection", Reservation.class)
                 .setParameter("accommodationId", accommodationId)
                 .setParameter("from", from)
