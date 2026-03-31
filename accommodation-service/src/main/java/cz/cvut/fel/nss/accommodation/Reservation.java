@@ -3,7 +3,7 @@ package cz.cvut.fel.nss.accommodation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Entity
@@ -22,16 +22,18 @@ public class Reservation {
     private Long id;
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
     private double reservationPrice;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "accommodation_id", nullable = false)
     private Accommodation accommodation;
 
+    @NotNull
+    @Column(nullable = false)
     private Long bookingId;
 
     public Long getId() {
@@ -42,19 +44,19 @@ public class Reservation {
         this.id = id;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -96,7 +98,7 @@ public class Reservation {
                 "startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", reservationPrice=" + reservationPrice +
-                ", accomodation=" + accommodation +
+                ", accommodation=" + accommodation +
                 '}';
     }
 

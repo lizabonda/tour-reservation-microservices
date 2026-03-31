@@ -117,7 +117,7 @@ public class Accommodation {
 
     @Override
     public String toString() {
-        return "Accomodation{" +
+        return "Accommodation{" +
                 "name='" + name + '\'' +
                 ", roomType='" + roomType + '\'' +
                 ", pricePerNight=" + pricePerNight +
