@@ -3,8 +3,12 @@ package cz.cvut.fel.nss.tour;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "activity")
@@ -14,25 +18,36 @@ public class Activity {
     private Long id;
     @NotNull
     @Column(nullable = false)
-    String name;
+    private String name;
     @NotNull
     @Column(nullable = false)
-    String Description;
+    private String description;
     @NotNull
     @Column(nullable = false)
-    int duration;
+    private int duration;
     @NotNull
     @Column(nullable = false)
-    double price;
+    private double price;
     @NotNull
     @Column(name = "start_time", nullable = false)
-    Date start;
+    private LocalDateTime start;
     @NotNull
     @Column(name = "end_time", nullable = false)
-    Date end;
+    private LocalDateTime end;
+
+    @ManyToMany(mappedBy = "activities")
+    private List<Tour> tours = new ArrayList<>();
 
     public String getName() {
         return name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -40,11 +55,11 @@ public class Activity {
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     public int getDuration() {
@@ -63,19 +78,27 @@ public class Activity {
         this.price = price;
     }
 
-    public Date getStart() {
+    public LocalDateTime getStart() {
         return start;
     }
 
-    public void setStart(Date start) {
+    public List<Tour> getTours() {
+        return tours;
+    }
+
+    public void setTours(List<Tour> tours) {
+        this.tours = tours;
+    }
+
+    public void setStart(LocalDateTime start) {
         this.start = start;
     }
 
-    public Date getEnd() {
+    public LocalDateTime getEnd() {
         return end;
     }
 
-    public void setEnd(Date end) {
+    public void setEnd(LocalDateTime end) {
         this.end = end;
     }
 
@@ -88,5 +111,18 @@ public class Activity {
                 ", start=" + start +
                 ", end=" + end +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Activity)) return false;
+        Activity other = (Activity) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

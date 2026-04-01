@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.tour.dao;
 
-import cz.cvut.fel.nss.projekt.model.Tour;
+import cz.cvut.fel.nss.tour.Tour;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Repository
 public class TourDao implements  GenericDao<Tour> {
     @PersistenceContext
-    protected EntityManager em;
+    private EntityManager em;
 
     @Override
     public Tour find(Long id) {
@@ -51,9 +51,11 @@ public class TourDao implements  GenericDao<Tour> {
     }
 
     public Tour findByDestinationAndStartDate(String destination, LocalDate startDate) {
-        return em.createNamedQuery("Tour.findByDestinationAndStartDate", Tour.class)
+        List<Tour> result = em.createNamedQuery("Tour.findByDestinationAndStartDate", Tour.class)
                 .setParameter("destination", destination)
                 .setParameter("date", startDate)
-                .getSingleResult();
+                .getResultList();
+
+        return result.isEmpty() ? null : result.get(0);
     }
 }

@@ -112,11 +112,6 @@ public class BookingService {
         return booking;
     }
 
-
-
-
-
-
     public Booking findById(Long id) {
         Objects.requireNonNull(id);
         final Booking booking = bookingDao.find(id);
@@ -143,6 +138,18 @@ public class BookingService {
         for (Booking booking:copy_bookings) {
             tour.removeBooking(booking);
             bookingDao.remove(booking);
+        }
+    }
+
+    public void validateCapacity(Tour tour, int requestedSize) {
+        Objects.requireNonNull(tour);
+        int capacity = tour.getCapacity();
+        int occupied= bookingDao.countPersonsByTour(tour.getId());
+
+        if(requestedSize+occupied>capacity) {
+            throw new IllegalStateException(
+                    "Tour capacity exceeded: capacity=" + capacity
+            );
         }
     }
 
