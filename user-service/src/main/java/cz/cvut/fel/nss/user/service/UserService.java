@@ -1,8 +1,7 @@
-package cz.cvut.fel.ear.projekt.service;
+package cz.cvut.fel.nss.user.service;
 
-import cz.cvut.fel.ear.projekt.dao.UserDao;
-import cz.cvut.fel.ear.projekt.model.User;
 import cz.cvut.fel.nss.user.Person;
+import cz.cvut.fel.nss.user.dao.PersonDao;
 import cz.cvut.fel.nss.user.dto.PersonDto;
 import cz.cvut.fel.nss.user.exception.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -10,16 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
 public class UserService {
+
+    private final PersonDao personDao;
+
+    public UserService(PersonDao personDao) {
+        this.personDao = personDao;
+    }
+
     // We support 2 modes:
     // 1) person.id is set -> use existing Person
     // 2) person.id = null -> create new Person using (firstName, lastName, dateOfBirth)
-    private List<Person> foundOrCreatePersons(List<PersonDto> personsDto) {
+    public List<Person> foundOrCreatePersons(List<PersonDto> personsDto) {
         final List<Person> persons = new ArrayList<>(personsDto.size());
+        if (personsDto == null || personsDto.isEmpty()) {
+            throw new IllegalArgumentException("Persons must not be empty");
+        }
         for (PersonDto personDto : personsDto) {
             if (personDto == null) {
                 throw new IllegalArgumentException("Person must not be null");

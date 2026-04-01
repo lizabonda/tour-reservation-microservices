@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

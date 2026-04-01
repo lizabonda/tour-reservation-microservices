@@ -1,7 +1,8 @@
 package cz.cvut.fel.nss.user.dto.mapper;
 
-import cz.cvut.fel.nss.projekt.dto.UserDto;
-import cz.cvut.fel.nss.projekt.model.User;
+
+import cz.cvut.fel.nss.user.User;
+import cz.cvut.fel.nss.user.dto.UserDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

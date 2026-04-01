@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.dao;
 
-import cz.cvut.fel.nss.projekt.model.Person;
+import cz.cvut.fel.nss.user.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

@@ -22,7 +22,9 @@ public class User extends Person {
     @NotNull
     @Column(nullable = false)
     private String email;
-    @Enumerated(value=EnumType.STRING)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     public String getUsername() {
