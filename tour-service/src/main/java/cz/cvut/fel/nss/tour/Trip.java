@@ -11,21 +11,23 @@ public class Trip {
     private Long id;
     @NotNull
     @Column(nullable = false)
-    String carrier;
+    private String carrier;
     @NotNull
     @Column(nullable = false)
-    LocalDateTime departAt;
+    private LocalDateTime departAt;
     @NotNull
     @Column(nullable = false)
-    LocalDateTime arriveAt;
+    private LocalDateTime arriveAt;
     @NotNull
     @Column(name = "from_location", nullable = false)
-    String from;
+    private String from;
     @NotNull
     @Column(name = "to_location", nullable = false)
-    String to;
-    @Enumerated(value=EnumType.STRING)
-    TransportType type;
+    private String to;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TransportType type;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "tour_id", nullable = false)
@@ -33,6 +35,14 @@ public class Trip {
 
     public String getCarrier() {
         return carrier;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setCarrier(String carrier) {
@@ -93,7 +103,21 @@ public class Trip {
                 "carrier='" + carrier + '\'' +
                 ", departAt=" + departAt +
                 ", from='" + from + '\'' +
-                ", tour=" + tour +
+                ", to='" + to + '\'' +
+                ", type=" + type +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Trip)) return false;
+        Trip other = (Trip) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

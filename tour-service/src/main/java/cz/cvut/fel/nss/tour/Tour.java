@@ -6,9 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@NamedQuery(name = "Tour.findByDestinationAndStartDate", query = "SELECT t from Tour t WHERE t.destination=:destination AND t.startDate>=:date ORDER BY t.startDate")
+@NamedQuery(name = "Tour.findByDestinationAndStartDate", query = "SELECT t FROM Tour t WHERE t.destination = :destination AND t.startDate = :date")
 public class Tour {
     @Id
     @GeneratedValue
@@ -32,7 +33,15 @@ public class Tour {
     private double price;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<Long> accommodationsId;
+    private List<Long> accommodationsId = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "tour_activity",
+            joinColumns = @JoinColumn(name = "tour_id"),
+            inverseJoinColumns = @JoinColumn(name = "activity_id")
+    )
+    private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("departAt")
@@ -56,6 +65,14 @@ public class Tour {
 
     public String getDestination() {
         return destination;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 
     public void setDestination(String destination) {
@@ -126,6 +143,19 @@ public class Tour {
                 ", startDate=" + startDate +
                 ", destination='" + destination + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Tour)) return false;
+        Tour other = (Tour) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
 
