@@ -1,6 +1,7 @@
 package cz.cvut.fel.nss.booking.config;
 
-import cz.cvut.fel.nss.projekt.exception.NotFoundException;
+
+import cz.cvut.fel.nss.booking.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;

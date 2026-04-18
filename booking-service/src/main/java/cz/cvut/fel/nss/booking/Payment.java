@@ -11,20 +11,22 @@ public class Payment {
     private Long id;
     @NotNull
     @Column(nullable = false)
-    int paymentNumber;
+    private int paymentNumber;
     @NotNull
     @Column(nullable = false)
-    double amount;
+    private double amount;
     @NotNull
     @Column(nullable = false)
-    LocalDateTime date;
+    private LocalDateTime date;
     @Enumerated(value=EnumType.STRING)
-    PaymentStatus status;
+    private PaymentStatus status;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
+    @NotNull
+    @Column(nullable = false)
     private Long userId;
 
 
@@ -64,6 +66,14 @@ public class Payment {
         return userId;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -83,5 +93,18 @@ public class Payment {
                 ", amount=" + amount +
                 ", date=" + date +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Payment)) return false;
+        Payment other = (Payment) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
