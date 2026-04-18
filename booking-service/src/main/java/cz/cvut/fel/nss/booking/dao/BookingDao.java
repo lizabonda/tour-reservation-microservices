@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.booking.dao;
 
-import cz.cvut.fel.nss.projekt.model.Booking;
-import cz.cvut.fel.nss.projekt.model.Booking_;
+
+import cz.cvut.fel.nss.booking.Booking;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -66,8 +66,8 @@ public class BookingDao implements GenericDao<Booking> {
         Long count = em.createQuery(
                         "SELECT COUNT(p) " +
                                 "FROM Booking b " +
-                                "JOIN b.persons p " +
-                                "WHERE b.tour.id = :tourId",
+                                "JOIN b.personIds p " +
+                                "WHERE b.tourId = :tourId",
                         Long.class
                 )
                 .setParameter("tourId", tourId)
@@ -82,19 +82,25 @@ public class BookingDao implements GenericDao<Booking> {
         Root<Booking> booking = cq.from(Booking.class);
 
         Predicate from = cb.greaterThanOrEqualTo(
-                booking.get(Booking_.createdAt),
+                booking.get("createdAt"),
                 fromDate
         );
 
         Predicate to = cb.lessThanOrEqualTo(
-                booking.get(Booking_.createdAt),
+                booking.get("createdAt"),
                 toDate
         );
 
         cq.select(booking)
                 .where(cb.and(from, to))
-                .orderBy(cb.asc(booking.get(Booking_.createdAt)));
+                .orderBy(cb.asc(booking.get("createdAt")));
 
         return em.createQuery(cq).getResultList();
+    }
+
+    public List<Booking> findAllByTour(Long tourId) {
+        return em.createQuery("SELECT b FROM Booking b WHERE b.tourId = :tourId", Booking.class)
+                .setParameter("tourId", tourId)
+                .getResultList();
     }
 }

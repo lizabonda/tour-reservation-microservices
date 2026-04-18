@@ -17,8 +17,8 @@ public class BookingPricingService {
         long days = ChronoUnit.DAYS.between(createdAt, tourStartDate);
         double discount = 0.0;
         if (days >= EARLY_DAYS) {
-            double erly_discount = basePrice * EARLY_DAYS_DISCOUNT;
-            discount = erly_discount;
+            double earlyDiscount = basePrice * EARLY_DAYS_DISCOUNT;
+            discount = earlyDiscount;
         } else if (days <= LASTMINUTE_DAYS) {
             double last_minute_discount = basePrice * LASTMINUTE_DAYS_DISCOUNT;
             discount = last_minute_discount;

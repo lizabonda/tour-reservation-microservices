@@ -4,7 +4,9 @@ import java.util.List;
 
 public record BookingDto(Long id,
                          Integer reservationNumber,
-                         TourDto tour,
-                         List<PersonDto> persons,
-                         List<ReservationDto> reservations,
-                         double totalPrice){}
+                         Long tourId,
+                         List<Long> personIds,
+                         List<Long> reservationIds,
+                         double totalPrice){
+
+}

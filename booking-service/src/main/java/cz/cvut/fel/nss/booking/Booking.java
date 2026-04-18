@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +23,23 @@ public class Booking {
     @Column(nullable = false)
     private LocalDate createdAt;
 
+    @NotNull
+    @Column(nullable = false)
     private Long tourId;
 
     @ElementCollection
+    @CollectionTable(name = "booking_person_ids", joinColumns = @JoinColumn(name = "booking_id"))
+    @Column(name = "person_id")
     private List<Long> personIds = new ArrayList<>();
 
     @ElementCollection
+    @CollectionTable(name = "booking_reservation_ids", joinColumns = @JoinColumn(name = "booking_id"))
+    @Column(name = "reservation_id")
     private List<Long> reservationIds = new ArrayList<>();
 
     @ElementCollection
+    @CollectionTable(name = "booking_activity_ids", joinColumns = @JoinColumn(name = "booking_id"))
+    @Column(name = "activity_id")
     private List<Long> activityIds = new ArrayList<>();
 
     @OneToMany(mappedBy = "booking")
@@ -117,5 +124,18 @@ public class Booking {
                 "reservationNumber=" + reservationNumber +
                 ", totalPrice=" + totalPrice +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Booking)) return false;
+        Booking other = (Booking) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
