@@ -1,9 +1,11 @@
 package cz.cvut.fel.nss.booking.controller;
 
-import cz.cvut.fel.nss.projekt.dto.BookingDto;
-import cz.cvut.fel.nss.projekt.dto.mapper.BookingMapper;
-import cz.cvut.fel.nss.projekt.model.Booking;
-import cz.cvut.fel.nss.projekt.service.BookingService;
+
+import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.booking.dto.BookingDto;
+import cz.cvut.fel.nss.booking.dto.CreateBookingDTO;
+import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
+import cz.cvut.fel.nss.booking.service.BookingService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,7 @@ class BookingController {
     }
 
     @PostMapping
-    ResponseEntity<BookingDto> create(@RequestBody BookingDto request) {
+    ResponseEntity<BookingDto> create(@RequestBody CreateBookingDTO request) {
         Booking created = bookingService.createBookingFromDto(request);
         BookingDto response = bookingMapper.bookingToBookingDto(created);
         return ResponseEntity
@@ -50,22 +52,11 @@ class BookingController {
     }
 
 
-    @PutMapping("/reservations/{reservationId}/accommodation/{accommodationId}")
-    ResponseEntity<Void> updateReservationAccommodation(
-            @PathVariable Long reservationId,
-            @PathVariable Long accommodationId
-    ) {
-        bookingService.updateBookingAccommodation(reservationId, accommodationId);
-        return ResponseEntity.noContent().build();
-    }
-
-    
     @DeleteMapping("/by-tour")
     ResponseEntity<Void> removeBookingsByTour(
-            @RequestParam String destination,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate
+            @RequestParam Long tourId
     ) {
-        bookingService.removeBookingByTour(destination, startDate);
+        bookingService.removeBookingByTour(tourId);
         return ResponseEntity.noContent().build();
     }
 }
