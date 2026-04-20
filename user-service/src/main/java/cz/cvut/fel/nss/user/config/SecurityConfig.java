@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.projekt.config;
+package cz.cvut.fel.nss.user.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,18 +19,19 @@ class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        // Booking access rules
-                        .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.PUT,  "/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,  "/api/bookings/**").authenticated()
-
-                        // H2 console
-                        .requestMatchers("/h2-console/**").permitAll()
-
-                        .anyRequest().denyAll()
-                )
-                .httpBasic(Customizer.withDefaults())
+                        .anyRequest().permitAll())
+//                        // Booking access rules
+//                        .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasRole("CUSTOMER")
+//                        .requestMatchers(HttpMethod.PUT,  "/api/bookings/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.DELETE,"/api/bookings/**").hasRole("ADMIN")
+//                        .requestMatchers(HttpMethod.GET,  "/api/bookings/**").authenticated()
+//
+//                        // H2 console
+//                        .requestMatchers("/h2-console/**").permitAll()
+//
+//                        .anyRequest().denyAll()
+//                )
+//                .httpBasic(Customizer.withDefaults())
                 .build();
     }
 
