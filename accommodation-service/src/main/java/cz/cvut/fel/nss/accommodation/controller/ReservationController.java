@@ -22,6 +22,11 @@ public class ReservationController {
         this.reservationMapper = reservationMapper;
     }
 
+//    @GetMapping("/test")
+//    public String test() {
+//        return "uyewryterwyuerwyut";
+//    }
+
     @PostMapping("/calculate-price")
     public AccommodationPricingSummaryDto calculatePrice(@RequestBody List<ReservationDto> reservationsDto) {
         return accommodationService.calculatePrice(reservationsDto);

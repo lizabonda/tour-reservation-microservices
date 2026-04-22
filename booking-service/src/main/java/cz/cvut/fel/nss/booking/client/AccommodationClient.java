@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "accommodation-service", url = "${app.accommodation-service.url}")
+@FeignClient(name = "accommodation-service")
 public interface AccommodationClient {
     @PostMapping("/reservations/calculate-price")
     AccommodationPricingSummaryDto calculatePrice(@RequestBody List<ReservationDto> reservationsDto);
