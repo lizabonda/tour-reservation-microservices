@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "user-service", url = "${app.user-service.url}")
+@FeignClient(name = "user-service")
 public interface UserClient {
     @PostMapping("/users/find-or-create")
     List<PersonDto> findOrCreatePersons(@RequestBody List<PersonDto> personsDto);
