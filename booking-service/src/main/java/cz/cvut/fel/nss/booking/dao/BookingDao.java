@@ -50,6 +50,12 @@ public class BookingDao implements GenericDao<Booking> {
     }
 
     @Override
+    public List<Booking> findByUser(Long userId) {
+        return em.createQuery("SELECT b FROM Booking b JOIN b.personIds personId WHERE personId=:userId", Booking.class)
+                .setParameter("userId", userId).getResultList();
+    }
+
+    @Override
     public void remove(Booking entity) {
         Objects.requireNonNull(entity);
         if (em.contains(entity)) {

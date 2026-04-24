@@ -59,4 +59,10 @@ class BookingController {
         bookingService.removeBookingByTour(tourId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user/{userId}")
+    ResponseEntity<List<BookingDto>> getBookingsByUser(@PathVariable Long userId) {
+        List<BookingDto> bookings = bookingService.findByUser(userId);
+        return ResponseEntity.ok(bookings);
+    }
 }

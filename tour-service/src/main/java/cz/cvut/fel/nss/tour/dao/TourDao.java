@@ -50,6 +50,15 @@ public class TourDao implements  GenericDao<Tour> {
         }
     }
 
+    @Override
+    public List<Tour> findByDate(LocalDate startDate, LocalDate endDate) {
+        return em.createQuery("SELECT t FROM Tour t WHERE t.startDate >= :startDate\n" +
+                        "                  AND t.endDate <= :endDate", Tour.class)
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .getResultList();
+    }
+
     public Tour findByDestinationAndStartDate(String destination, LocalDate startDate) {
         List<Tour> result = em.createNamedQuery("Tour.findByDestinationAndStartDate", Tour.class)
                 .setParameter("destination", destination)

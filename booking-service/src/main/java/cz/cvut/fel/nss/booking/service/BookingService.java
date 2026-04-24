@@ -137,6 +137,12 @@ public class BookingService {
             bookingDao.remove(booking);
         }
     }
+
+    public List<BookingDto> findByUser(Long userId) {
+        List<Booking> bookings = bookingDao.findByUser(userId);
+        return bookings.stream().map(b -> bookingMapper.bookingToBookingDto(b)).collect(Collectors.toList());
+
+    }
 }
 
 

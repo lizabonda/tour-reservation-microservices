@@ -12,6 +12,8 @@ public interface GenericDao<T> {
 
     List<T> findAll();
 
+    List<T> findByUser(Long userId);
+
     void save(T entity);
 
     default void persist(Collection<T> entities) {

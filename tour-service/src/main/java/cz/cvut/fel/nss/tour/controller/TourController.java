@@ -6,6 +6,9 @@ import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
 import cz.cvut.fel.nss.tour.service.TourService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/tours")
 public class TourController {
@@ -25,5 +28,11 @@ public class TourController {
             return null;
         }
         return tourMapper.tourToTourDto(tour);
+    }
+
+    @GetMapping("/date")
+    public List<TourDto> getToursByDate(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        List<Tour> tours= tourService.findByDate(startDate,endDate);
+        return tours.stream().map(tour -> tourMapper.tourToTourDto(tour)).toList();
     }
 }
