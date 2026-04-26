@@ -1,6 +1,5 @@
-package cz.cvut.fel.nss.user.config;
+package cz.cvut.fel.nss.accommodation.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
