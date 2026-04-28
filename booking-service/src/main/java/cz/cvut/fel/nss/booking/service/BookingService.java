@@ -143,6 +143,11 @@ public class BookingService {
         return bookings.stream().map(b -> bookingMapper.bookingToBookingDto(b)).collect(Collectors.toList());
 
     }
+
+    public void removeBookingById (Long id) {
+        Booking booking = bookingDao.find(id);
+        bookingDao.remove(booking);
+    }
 }
 
 

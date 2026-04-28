@@ -4,8 +4,10 @@ import cz.cvut.fel.nss.tour.Tour;
 import cz.cvut.fel.nss.tour.dto.TourDto;
 import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
 import cz.cvut.fel.nss.tour.service.TourService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,5 +36,20 @@ public class TourController {
     public List<TourDto> getToursByDate(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
         List<Tour> tours= tourService.findByDate(startDate,endDate);
         return tours.stream().map(tour -> tourMapper.tourToTourDto(tour)).toList();
+    }
+
+    @PostMapping
+    ResponseEntity <TourDto> createTour (@RequestBody TourDto tourDto) {
+        Tour created = tourService.createTour(tourDto);
+        TourDto response = tourMapper.tourToTourDto(created);
+        return ResponseEntity
+                .created(URI.create("/tours/" + created.getId()))
+                .body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> deleteTour(@PathVariable Long id) {
+        tourService.deleteTour(id);
+        return ResponseEntity.noContent().build();
     }
 }

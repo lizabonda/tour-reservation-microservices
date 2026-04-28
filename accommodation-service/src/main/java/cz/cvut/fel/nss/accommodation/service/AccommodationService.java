@@ -5,8 +5,10 @@ import cz.cvut.fel.nss.accommodation.MealPlan;
 import cz.cvut.fel.nss.accommodation.Reservation;
 import cz.cvut.fel.nss.accommodation.dao.AccommodationDao;
 import cz.cvut.fel.nss.accommodation.dao.ReservationDao;
+import cz.cvut.fel.nss.accommodation.dto.AccommodationDto;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
+import cz.cvut.fel.nss.accommodation.dto.mapper.AccommodationMapper;
 import cz.cvut.fel.nss.accommodation.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +23,12 @@ public class AccommodationService {
 
     private final AccommodationDao accommodationDao;
     private final ReservationDao reservationDao;
+    private final AccommodationMapper accommodationMapper;
 
-    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao) {
+    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao, AccommodationMapper accommodationMapper) {
         this.accommodationDao = accommodationDao;
         this.reservationDao = reservationDao;
+        this.accommodationMapper = accommodationMapper;
     }
 
     public AccommodationPricingSummaryDto calculatePrice(List<ReservationDto> reservationsDto) {
@@ -161,6 +165,17 @@ public class AccommodationService {
         r.setAccommodation(newAccommodation);
         r.calculateReservationPrice();
         reservationDao.update(r);
+    }
+
+    public Accommodation createAccommodation(AccommodationDto accommodationDto) {
+        Accommodation accommodation = accommodationMapper.accommodationDtoToAccommodation(accommodationDto);
+        accommodationDao.save(accommodation);
+        return accommodation;
+    }
+
+    public void deleteAccommodation (Long id) {
+        Accommodation accommodation = accommodationDao.find(id);
+        accommodationDao.remove(accommodation);
     }
 
 

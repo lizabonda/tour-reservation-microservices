@@ -22,15 +22,7 @@ class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/users/find-or-create").permitAll()
-                        .requestMatchers("/tours/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Booking access rules
-                        .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.PUT,  "/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET,  "/api/bookings/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/reservations/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/reservations/**").authenticated()
 
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())

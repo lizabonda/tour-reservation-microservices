@@ -3,6 +3,8 @@ package cz.cvut.fel.nss.tour.service;
 
 import cz.cvut.fel.nss.tour.Tour;
 import cz.cvut.fel.nss.tour.dao.TourDao;
+import cz.cvut.fel.nss.tour.dto.TourDto;
+import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,9 +14,11 @@ import java.util.List;
 public class TourService {
 
     private final TourDao tourDao;
+    private final TourMapper tourMapper;
 
-    public TourService(TourDao tourDao) {
+    public TourService(TourDao tourDao, TourMapper tourMapper) {
         this.tourDao = tourDao;
+        this.tourMapper = tourMapper;
     }
 
     public Tour findById(Long id) {
@@ -23,6 +27,17 @@ public class TourService {
 
     public List<Tour> findByDate(LocalDate startDate, LocalDate endDate) {
         return tourDao.findByDate(startDate,endDate);
+    }
+
+    public Tour createTour(TourDto tourDto) {
+        Tour tour = tourMapper.tourDtoToTour(tourDto);
+        tourDao.save(tour);
+        return tour;
+    }
+
+    public void deleteTour (Long id) {
+        Tour tour = tourDao.find(id);
+        tourDao.remove(tour);
     }
 }
 

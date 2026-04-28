@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.accommodation.config;
+package cz.cvut.fel.nss.tour.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +22,9 @@ class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/h2-console/**").permitAll()
                         // access rules
-                        .requestMatchers(HttpMethod.POST, "/accommodations/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/accommodations/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/accommodations/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/accommodations/**").permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/reservations/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/reservations/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/tours/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/tours/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/tours/**").hasRole("ADMIN")
 
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())
