@@ -6,5 +6,5 @@ public record ReservationDto(Long id,
                              LocalDate startDate,
                              LocalDate endDate,
                              double reservationPrice,
-                             AccommodationDto accommodation,
+                             Long accommodationId,
                              Long bookingId) {}

@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.booking.dto.mapper;
 
-import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.entity.Booking;
 import cz.cvut.fel.nss.booking.dto.BookingDto;
 
 import org.mapstruct.Mapper;

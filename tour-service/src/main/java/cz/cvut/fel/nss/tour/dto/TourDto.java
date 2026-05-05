@@ -2,6 +2,8 @@ package cz.cvut.fel.nss.tour.dto;
 import java.time.LocalDate;
 
 public record TourDto(Long id,
+                      String title,
+                      String description,
                       String destination,
                       LocalDate startDate,
                       LocalDate endDate,

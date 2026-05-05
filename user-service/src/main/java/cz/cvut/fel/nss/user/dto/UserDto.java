@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.dto;
 
 
-import cz.cvut.fel.nss.user.Role;
+import cz.cvut.fel.nss.entity.Role;
 
 public record UserDto(Long id, String username, Role role) {}

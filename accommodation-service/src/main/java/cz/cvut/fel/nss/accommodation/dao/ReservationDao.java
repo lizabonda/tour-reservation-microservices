@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.accommodation.dao;
 
-import cz.cvut.fel.nss.accommodation.Reservation;
+import cz.cvut.fel.nss.entity.Reservation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

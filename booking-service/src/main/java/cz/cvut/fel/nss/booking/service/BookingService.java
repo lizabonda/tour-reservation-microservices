@@ -5,7 +5,7 @@ import cz.cvut.fel.nss.booking.dto.accommodation.ReservationDto;
 import cz.cvut.fel.nss.booking.dto.tour.TourDto;
 import cz.cvut.fel.nss.booking.dto.user.PersonDto;
 
-import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.entity.Booking;
 import cz.cvut.fel.nss.booking.client.AccommodationClient;
 import cz.cvut.fel.nss.booking.client.TourClient;
 import cz.cvut.fel.nss.booking.client.UserClient;
@@ -13,6 +13,7 @@ import cz.cvut.fel.nss.booking.dao.BookingDao;
 import cz.cvut.fel.nss.booking.dto.*;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
 import cz.cvut.fel.nss.booking.exception.NotFoundException;
+import cz.cvut.fel.nss.entity.BookingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -89,21 +90,27 @@ public class BookingService {
 
         // Calculate price and create reservations via accommodation-service
         List<ReservationDto> resDtoInput = dto.reservations().stream()
-                .map(r -> new ReservationDto(null, r.startDate(), r.endDate(), 0, null, null))
+                .map(r -> new ReservationDto(null, r.startDate(), r.endDate(), 0, r.accommodationId(), null))
                 .collect(Collectors.toList());
 
         AccommodationPricingSummaryDto pricing = accommodationClient.calculatePrice(resDtoInput);
         double totalPrice = tour.price() * requestedSize + pricing.accommodationPrice() + pricing.allInclusiveCharge();
         booking.setTotalPrice(totalPrice);
 
-        if (booking.getReservationNumber() <= 0) {
-            booking.setReservationNumber(bookingDao.nextReservationNumber());
+        if (booking.getBookingNumber() <= 0) {
+            booking.setBookingNumber(bookingDao.nextBookingNumber());
         }
 
         bookingDao.save(booking);
 
         // Link reservations to bookingId
-        List<ReservationDto> createdReservations = accommodationClient.createReservations(resDtoInput, booking.getId());
+        List<ReservationDto> createdReservations;
+        try {
+            createdReservations = accommodationClient.createReservations(resDtoInput, booking.getId());
+        } catch (feign.FeignException.Conflict e) {
+            throw new IllegalStateException("Accommodation is not available for given dates", e);
+        }
+
         booking.setReservationIds(createdReservations.stream().map(ReservationDto::id).collect(Collectors.toList()));
         bookingDao.update(booking);
 
@@ -131,10 +138,11 @@ public class BookingService {
     }
 
 
-    public void removeBookingByTour(Long tourId) {
+    public void cancelBookingByTour(Long tourId) {
         List<Booking> bookings = bookingDao.findAllByTour(tourId);
         for (Booking booking : bookings) {
-            bookingDao.remove(booking);
+            booking.setStatus(BookingStatus.CANCELLED);
+            bookingDao.update(booking);
         }
     }
 

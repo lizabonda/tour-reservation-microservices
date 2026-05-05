@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.booking;
+package cz.cvut.fel.nss.entity;
 
 public enum PaymentStatus {
     PENDING, CONFIRMED

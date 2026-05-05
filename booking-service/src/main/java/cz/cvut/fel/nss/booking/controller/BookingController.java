@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.booking.controller;
 
 
-import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.entity.Booking;
 import cz.cvut.fel.nss.booking.dto.BookingDto;
 import cz.cvut.fel.nss.booking.dto.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
@@ -52,11 +52,11 @@ class BookingController {
     }
 
 
-    @DeleteMapping("/by-tour")
+    @PatchMapping("/by-tour")
     ResponseEntity<Void> removeBookingsByTour(
             @RequestParam Long tourId
     ) {
-        bookingService.removeBookingByTour(tourId);
+        bookingService.cancelBookingByTour(tourId);
         return ResponseEntity.noContent().build();
     }
 

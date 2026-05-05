@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.controller;
 
-import cz.cvut.fel.nss.user.Person;
+import cz.cvut.fel.nss.entity.Person;
 import cz.cvut.fel.nss.user.dto.PersonDto;
 import cz.cvut.fel.nss.user.dto.mapper.PersonMapper;
 import cz.cvut.fel.nss.user.service.UserService;
