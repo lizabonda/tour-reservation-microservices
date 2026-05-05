@@ -1,0 +1,38 @@
+{
+	"info": {
+		"_postman_id": "7538a8e1-645b-4c27-817a-c71ed07a2134",
+		"name": "User Service API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Find or Create Persons",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\"\n  }\n]"
+				},
+				"url": {
+					"raw": "http://localhost:8081/users/find-or-create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"users",
+						"find-or-create"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

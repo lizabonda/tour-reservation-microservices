@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.booking;
+package cz.cvut.fel.nss.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +16,8 @@ public class Booking {
     @SequenceGenerator(name = "booking_seq", sequenceName = "booking_seq", allocationSize = 1)
     private Long id;
 
-    private int reservationNumber;
+    @Column(name = "booking_number")
+    private int bookingNumber;
     private double totalPrice;
 
     @NotNull
@@ -26,6 +27,10 @@ public class Booking {
     @NotNull
     @Column(nullable = false)
     private Long tourId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BookingStatus status = BookingStatus.CREATED;
 
     @ElementCollection
     @CollectionTable(name = "booking_person_ids", joinColumns = @JoinColumn(name = "booking_id"))
@@ -54,12 +59,12 @@ public class Booking {
         this.id = id;
     }
 
-    public int getReservationNumber() {
-        return reservationNumber;
+    public int getBookingNumber() {
+        return bookingNumber;
     }
 
-    public void setReservationNumber(int reservationNumber) {
-        this.reservationNumber = reservationNumber;
+    public void setBookingNumber(int bookingNumber) {
+        this.bookingNumber = bookingNumber;
     }
 
     public double getTotalPrice() {
@@ -76,6 +81,14 @@ public class Booking {
 
     public Long getTourId() {
         return tourId;
+    }
+
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(BookingStatus status) {
+        this.status = status;
     }
 
     public void setTourId(Long tourId) {
@@ -121,7 +134,7 @@ public class Booking {
     @Override
     public String toString() {
         return "Booking{" +
-                "reservationNumber=" + reservationNumber +
+                "reservationNumber=" + bookingNumber +
                 ", totalPrice=" + totalPrice +
                 '}';
     }

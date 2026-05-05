@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.user;
+package cz.cvut.fel.nss.entity;
 
 public enum Role {
     CUSTOMER, ADMIN

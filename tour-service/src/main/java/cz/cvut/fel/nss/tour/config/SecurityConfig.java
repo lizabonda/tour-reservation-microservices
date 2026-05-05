@@ -24,7 +24,7 @@ class SecurityConfig {
                         // access rules
                         .requestMatchers(HttpMethod.POST, "/tours/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/tours/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/tours/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/tours/**").hasRole("ADMIN")
 
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())

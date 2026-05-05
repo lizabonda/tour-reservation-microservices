@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.booking.dao;
 
 
-import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.entity.Booking;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -36,9 +36,9 @@ public class BookingDao implements GenericDao<Booking> {
         em.persist(entity);
     }
 
-    public int nextReservationNumber() {
+    public int nextBookingNumber() {
         Number value = (Number) em
-                .createNativeQuery("SELECT NEXT VALUE FOR booking_reservation_number_seq")
+                .createNativeQuery("SELECT nextval('booking_reservation_number_seq')")
                 .getSingleResult();
         return value.intValue();
     }

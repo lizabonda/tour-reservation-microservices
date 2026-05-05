@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.service;
 
-import cz.cvut.fel.nss.user.Person;
+import cz.cvut.fel.nss.entity.Person;
 import cz.cvut.fel.nss.user.dao.PersonDao;
 import cz.cvut.fel.nss.user.dto.PersonDto;
 import cz.cvut.fel.nss.user.exception.NotFoundException;

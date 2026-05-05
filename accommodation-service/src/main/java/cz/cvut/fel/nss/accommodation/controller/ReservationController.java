@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.accommodation.controller;
 
-import cz.cvut.fel.nss.accommodation.Reservation;
+import cz.cvut.fel.nss.entity.Reservation;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.ReservationMapper;

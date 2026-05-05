@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.tour;
+package cz.cvut.fel.nss.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @NamedQuery(name = "Tour.findByDestinationAndStartDate", query = "SELECT t FROM Tour t WHERE t.destination = :destination AND t.startDate = :date")
@@ -26,6 +25,11 @@ public class Tour {
     @NotNull
     @Column(nullable = false)
     private LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TourStatus status = TourStatus.ACTIVE;
+
     @NotNull
     @Column(nullable = false)
     private String description;
@@ -61,6 +65,14 @@ public class Tour {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public TourStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TourStatus status) {
+        this.status = status;
     }
 
     public String getDestination() {

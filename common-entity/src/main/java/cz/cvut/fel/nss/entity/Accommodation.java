@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.accommodation;
+package cz.cvut.fel.nss.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ public class Accommodation {
     @Id
     @GeneratedValue
     private Long id;
-    @NotNull
+    @org.jetbrains.annotations.NotNull
     @Column(nullable = false)
     private String name;
     @NotNull

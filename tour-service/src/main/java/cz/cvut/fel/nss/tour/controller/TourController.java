@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.tour.controller;
 
-import cz.cvut.fel.nss.tour.Tour;
+import cz.cvut.fel.nss.entity.Tour;
 import cz.cvut.fel.nss.tour.dto.TourDto;
 import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
 import cz.cvut.fel.nss.tour.service.TourService;
@@ -47,9 +47,9 @@ public class TourController {
                 .body(response);
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteTour(@PathVariable Long id) {
-        tourService.deleteTour(id);
+    @PatchMapping("/{id}")
+    ResponseEntity<Void> cancelTour(@PathVariable Long id) {
+        tourService.cancelTour(id);
         return ResponseEntity.noContent().build();
     }
 }

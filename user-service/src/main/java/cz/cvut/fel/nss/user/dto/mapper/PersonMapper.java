@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.dto.mapper;
 
-import cz.cvut.fel.nss.user.Person;
+import cz.cvut.fel.nss.entity.Person;
 import cz.cvut.fel.nss.user.dto.PersonDto;
 import org.mapstruct.Mapper;
 

@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.user;
+package cz.cvut.fel.nss.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
