@@ -28,6 +28,7 @@ class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,  "/api/bookings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/api/bookings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH,"/api/bookings/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.GET,  "/api/bookings/**").authenticated()
 
                         .anyRequest().permitAll())

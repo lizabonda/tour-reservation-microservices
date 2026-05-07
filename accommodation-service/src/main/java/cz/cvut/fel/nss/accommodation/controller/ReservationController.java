@@ -5,6 +5,8 @@ import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.ReservationMapper;
 import cz.cvut.fel.nss.accommodation.service.AccommodationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +24,6 @@ public class ReservationController {
         this.reservationMapper = reservationMapper;
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "uyewryterwyuerwyut";
-    }
 
     @PostMapping("/calculate-price")
     public AccommodationPricingSummaryDto calculatePrice(@RequestBody List<ReservationDto> reservationsDto) {
@@ -38,5 +36,11 @@ public class ReservationController {
         return reservations.stream()
                 .map(reservationMapper::reservationToReservationDto)
                 .collect(Collectors.toList());
+    }
+
+    @PatchMapping("/booking/cancel/{bookingId}")
+    ResponseEntity<Void> cancelReservationsByBookingId(@PathVariable Long bookingId) {
+        accommodationService.cancelReservationsByBookingId(bookingId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -31,6 +31,9 @@ public class Accommodation {
     @Enumerated(value=EnumType.STRING)
     private MealPlan mealPlan;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
     @OneToMany(mappedBy = "accommodation",orphanRemoval = true)
     @OrderBy("startDate")
     private List<Reservation> reservations= new ArrayList<>();
@@ -45,6 +48,14 @@ public class Accommodation {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public void setName(String name) {

@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
                 "WHERE r.accommodation.id = :accommodationId " +
                 "AND r.endDate > :from " +
                 "AND r.startDate < :to " +
+                "AND r.status != cz.cvut.fel.nss.entity.ReservationStatus.CANCELLED " +
                 "ORDER BY r.startDate"
 )
 public class Reservation {
@@ -35,6 +36,10 @@ public class Reservation {
     @NotNull
     @Column(nullable = false)
     private Long bookingId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReservationStatus status = ReservationStatus.CREATED;
 
     public Long getId() {
         return id;
@@ -82,6 +87,14 @@ public class Reservation {
 
     public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
     }
 
     public void calculateReservationPrice() {
