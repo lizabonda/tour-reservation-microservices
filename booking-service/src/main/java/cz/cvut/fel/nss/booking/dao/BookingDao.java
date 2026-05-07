@@ -2,6 +2,7 @@ package cz.cvut.fel.nss.booking.dao;
 
 
 import cz.cvut.fel.nss.entity.Booking;
+import cz.cvut.fel.nss.entity.BookingStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -73,10 +74,11 @@ public class BookingDao implements GenericDao<Booking> {
                         "SELECT COUNT(p) " +
                                 "FROM Booking b " +
                                 "JOIN b.personIds p " +
-                                "WHERE b.tourId = :tourId",
+                                "WHERE b.tourId = :tourId AND b.status != :status",
                         Long.class
                 )
                 .setParameter("tourId", tourId)
+                .setParameter("status", BookingStatus.CANCELLED)
                 .getSingleResult();
 
         return count.intValue();

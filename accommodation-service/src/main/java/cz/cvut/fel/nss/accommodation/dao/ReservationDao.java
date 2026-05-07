@@ -57,4 +57,16 @@ public class ReservationDao implements GenericDao<Reservation> {
                 .setParameter("to", to)
                 .getResultList();
     }
+
+    public List<Reservation> findAllByAccommodationId(Long accommodationId) {
+        return em.createQuery("SELECT r FROM Reservation r WHERE r.accommodation.id = :accommodationId", Reservation.class)
+                .setParameter("accommodationId", accommodationId)
+                .getResultList();
+    }
+
+    public List<Reservation> findAllByBookingId(Long bookingId) {
+        return em.createQuery("SELECT r FROM Reservation r WHERE r.bookingId = :bookingId", Reservation.class)
+                .setParameter("bookingId", bookingId)
+                .getResultList();
+    }
 }

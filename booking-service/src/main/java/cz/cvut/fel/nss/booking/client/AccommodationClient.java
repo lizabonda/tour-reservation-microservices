@@ -3,9 +3,8 @@ package cz.cvut.fel.nss.booking.client;
 import cz.cvut.fel.nss.booking.dto.accommodation.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.booking.dto.accommodation.ReservationDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,4 +15,8 @@ public interface AccommodationClient {
 
     @PostMapping("/reservations")
     List<ReservationDto> createReservations(@RequestBody List<ReservationDto> reservationsDto, @RequestParam("bookingId") Long bookingId);
+
+    @PatchMapping("/booking/cancel/{bookingId}")
+    ResponseEntity<Void> cancelReservationsByBookingId(@PathVariable Long bookingId);
+
 }

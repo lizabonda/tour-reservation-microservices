@@ -7,6 +7,7 @@ import cz.cvut.fel.nss.booking.dto.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
 import cz.cvut.fel.nss.booking.service.BookingService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,8 +62,16 @@ class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> removeBookingById(@PathVariable Long id) {
-        bookingService.removeBookingById(id);
+    // when we delete accomodation
+    ResponseEntity<Void> removeBookingByIdInternally(@PathVariable Long id) {
+        bookingService.removeBookingByIdBySystem(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    //when user delete booking
+    @DeleteMapping("cancel/user/{id}")
+    ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
+        bookingService.cancelBookingByUser(id);
         return ResponseEntity.noContent().build();
     }
 

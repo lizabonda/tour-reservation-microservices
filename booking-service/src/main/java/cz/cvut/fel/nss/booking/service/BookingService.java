@@ -146,15 +146,33 @@ public class BookingService {
         }
     }
 
+
     public List<BookingDto> findByUser(Long userId) {
         List<Booking> bookings = bookingDao.findByUser(userId);
         return bookings.stream().map(b -> bookingMapper.bookingToBookingDto(b)).collect(Collectors.toList());
 
     }
-
-    public void removeBookingById (Long id) {
+    // when we delete accommodation
+    public void removeBookingByIdBySystem (Long id) {
         Booking booking = bookingDao.find(id);
-        bookingDao.remove(booking);
+        if (booking == null) {
+            throw new NotFoundException("Booking not found: " + id);
+        }
+        if(booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new IllegalStateException("Booking is already cancelled");
+        }
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingDao.update(booking);
+    }
+
+    public void cancelBookingByUser(Long id) {
+        Booking booking = bookingDao.find(id);
+        if (booking == null || booking.getStatus() == BookingStatus.CANCELLED) {
+            return;
+        }
+            accommodationClient.cancelReservationsByBookingId(id);
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingDao.update(booking);
     }
 }
 
