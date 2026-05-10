@@ -7,4 +7,5 @@ public record ReservationDto(Long id,
                              LocalDate endDate,
                              double reservationPrice,
                              Long accommodationId,
-                             Long bookingId) {}
+                             Long bookingId,
+                             int numberOfPersons) {}

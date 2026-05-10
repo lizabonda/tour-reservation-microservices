@@ -37,6 +37,9 @@ public class Reservation {
     @Column(nullable = false)
     private Long bookingId;
 
+    @Column(nullable = false)
+    private int numberOfPersons;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReservationStatus status = ReservationStatus.CREATED;
@@ -87,6 +90,14 @@ public class Reservation {
 
     public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public int getNumberOfPersons() {
+        return numberOfPersons;
+    }
+
+    public void setNumberOfPersons(int numberOfPersons) {
+        this.numberOfPersons = numberOfPersons;
     }
 
     public ReservationStatus getStatus() {

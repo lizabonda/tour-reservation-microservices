@@ -38,7 +38,7 @@ public class ReservationController {
                 .collect(Collectors.toList());
     }
 
-    @PatchMapping("/booking/cancel/{bookingId}")
+    @DeleteMapping("/booking/cancel/{bookingId}")
     ResponseEntity<Void> cancelReservationsByBookingId(@PathVariable Long bookingId) {
         accommodationService.cancelReservationsByBookingId(bookingId);
         return ResponseEntity.noContent().build();

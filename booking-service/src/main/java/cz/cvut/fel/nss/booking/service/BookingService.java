@@ -90,7 +90,7 @@ public class BookingService {
 
         // Calculate price and create reservations via accommodation-service
         List<ReservationDto> resDtoInput = dto.reservations().stream()
-                .map(r -> new ReservationDto(null, r.startDate(), r.endDate(), 0, r.accommodationId(), null))
+                .map(r -> new ReservationDto(null, r.startDate(), r.endDate(), 0, r.accommodationId(), null, requestedSize))
                 .collect(Collectors.toList());
 
         AccommodationPricingSummaryDto pricing = accommodationClient.calculatePrice(resDtoInput);
@@ -141,10 +141,17 @@ public class BookingService {
     public void cancelBookingByTour(Long tourId) {
         List<Booking> bookings = bookingDao.findAllByTour(tourId);
         for (Booking booking : bookings) {
+            if (booking.getStatus() != BookingStatus.CANCELLED) {
+                try {
+                    accommodationClient.cancelReservationsByBookingId(booking.getId());
+                } catch (feign.FeignException.NotFound e) {
+                    log.warn("Reservations for booking {} not found during cancellation", booking.getId());
+                }
+            }
             booking.setStatus(BookingStatus.CANCELLED);
             bookingDao.update(booking);
         }
-    }
+        }
 
 
     public List<BookingDto> findByUser(Long userId) {
@@ -170,7 +177,11 @@ public class BookingService {
         if (booking == null || booking.getStatus() == BookingStatus.CANCELLED) {
             return;
         }
+        try {
             accommodationClient.cancelReservationsByBookingId(id);
+        } catch (feign.FeignException.NotFound e) {
+            log.warn("Reservations for booking {} not found during cancellation by user", id);
+        }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.update(booking);
     }
