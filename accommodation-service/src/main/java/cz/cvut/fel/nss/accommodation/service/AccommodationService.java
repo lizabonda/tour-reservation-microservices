@@ -54,7 +54,7 @@ public class AccommodationService {
             if (reservationDto.startDate() == null || reservationDto.endDate() == null) {
                 throw new IllegalArgumentException("Reservation must have startDate and endDate");
             }
-            if (reservationDto.accommodationId()== null) {
+            if (reservationDto.accommodationId() == null) {
                 throw new IllegalArgumentException("Reservation must have accommodation.id");
             }
 
@@ -118,8 +118,17 @@ public class AccommodationService {
             reservation.setEndDate(endDate);
             reservation.setAccommodation(accommodation);
             reservation.setBookingId(bookingId);
+            int persons = reservationDto.numberOfPersons() > 0 ? reservationDto.numberOfPersons() : 1;
+            reservation.setNumberOfPersons(persons);
             reservation.calculateReservationPrice();
             validationForReservation(reservation);
+            
+            if (accommodation.getCapacity() < persons) {
+                throw new IllegalStateException("Not enough capacity in accommodation");
+            }
+            accommodation.setCapacity(accommodation.getCapacity() - persons);
+            accommodationDao.update(accommodation);
+
             reservationDao.save(reservation);
             reservations.add(reservation);
         }
@@ -154,16 +163,16 @@ public class AccommodationService {
             throw new NotFoundException("Reservation not found: " + reservationId);
         }
 
-        Accommodation newAccommodation= accommodationDao.find(newaccommodationId);
+        Accommodation newAccommodation = accommodationDao.find(newaccommodationId);
         if (newAccommodation == null) {
             throw new NotFoundException("Accommodation not found: " + newaccommodationId);
         }
 
-        List<Reservation> intersection= reservationDao.findIntersection(newaccommodationId, r.getStartDate(),r.getEndDate());
-        Reservation toDelete=null;
-        for (Reservation reservation:intersection) {
-            if(reservation.getId().equals(reservationId)) {
-                toDelete=reservation;
+        List<Reservation> intersection = reservationDao.findIntersection(newaccommodationId, r.getStartDate(), r.getEndDate());
+        Reservation toDelete = null;
+        for (Reservation reservation : intersection) {
+            if (reservation.getId().equals(reservationId)) {
+                toDelete = reservation;
                 break;
             }
         }
@@ -171,6 +180,18 @@ public class AccommodationService {
         if (!intersection.isEmpty()) {
             throw new IllegalStateException("Accommodation is not available for given dates");
         }
+
+        Accommodation oldAccommodation = r.getAccommodation();
+        int persons = r.getNumberOfPersons() > 0 ? r.getNumberOfPersons() : 1;
+        if (oldAccommodation != null) {
+            oldAccommodation.setCapacity(oldAccommodation.getCapacity() + persons);
+            accommodationDao.update(oldAccommodation);
+        }
+        if (newAccommodation.getCapacity() < persons) {
+            throw new IllegalStateException("Not enough capacity in new accommodation");
+        }
+        newAccommodation.setCapacity(newAccommodation.getCapacity() - persons);
+        accommodationDao.update(newAccommodation);
 
         r.setAccommodation(newAccommodation);
         r.calculateReservationPrice();
@@ -183,7 +204,7 @@ public class AccommodationService {
         return accommodation;
     }
 
-    public void deleteAccommodation (Long id) {
+    public void deleteAccommodation(Long id) {
         Accommodation accommodation = accommodationDao.find(id);
         if (accommodation == null) {
             throw new RuntimeException("Accommodation not found: " + id);
@@ -193,17 +214,26 @@ public class AccommodationService {
 
         List<Reservation> reservations = reservationDao.findAllByAccommodationId(id);
 
-        Set<Long> reservationookingIds = new HashSet<>();
+        Set<Long> reservationBookingIds = new HashSet<>();
         for (Reservation res : reservations) {
             if (res.getStatus() != ReservationStatus.CANCELLED) {
                 res.setStatus(ReservationStatus.CANCELLED);
+                int persons = res.getNumberOfPersons() > 0 ? res.getNumberOfPersons() : 1;
+                accommodation.setCapacity(accommodation.getCapacity() + persons);
                 reservationDao.update(res);
-                reservationookingIds.add(res.getId());
+                reservationBookingIds.add(res.getBookingId());
             }
-            for (Long bookingId : reservationookingIds) {
-                    bookingClient.removeBookingById(bookingId);
+        }
+        accommodationDao.update(accommodation);
+        for (Long bookingId : reservationBookingIds) {
+            if (bookingId != null) {
+                try {
+                    bookingClient.removeBookingByIdInternally(bookingId);
+                } catch (feign.FeignException.NotFound e) {
+                    //TODO
+                }
             }
-}
+        }
     }
 
     public void cancelReservationsByBookingId(Long bookingId) {
@@ -211,6 +241,12 @@ public class AccommodationService {
         for (Reservation res : reservations) {
             if (res.getStatus() != ReservationStatus.CANCELLED) {
                 res.setStatus(ReservationStatus.CANCELLED);
+                Accommodation accommodation = res.getAccommodation();
+                if (accommodation != null) {
+                    int persons = res.getNumberOfPersons() > 0 ? res.getNumberOfPersons() : 1;
+                    accommodation.setCapacity(accommodation.getCapacity() + persons);
+                    accommodationDao.update(accommodation);
+                }
                 reservationDao.update(res);
             }
         }

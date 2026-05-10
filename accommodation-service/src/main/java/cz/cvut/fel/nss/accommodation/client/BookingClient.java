@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "booking-service")
+@FeignClient(name = "booking-service",path = "/api/bookings")
 public interface BookingClient {
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> removeBookingById(@PathVariable Long id);
+    @DeleteMapping ("/{id}")
+    ResponseEntity<Void> removeBookingByIdInternally(@PathVariable Long id);
 }

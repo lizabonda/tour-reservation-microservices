@@ -17,12 +17,16 @@ public class TourDao implements  GenericDao<Tour> {
     @Override
     public Tour find(Long id) {
         Objects.requireNonNull(id);
-        return em.find(Tour.class, id);
+        Tour tour = em.find(Tour.class, id);
+        if (tour != null && tour.getStatus() == cz.cvut.fel.nss.entity.TourStatus.CANCELLED) {
+            return null;
+        }
+        return tour;
     }
 
     @Override
     public List<Tour> findAll() {
-        return em.createQuery("SELECT t FROM Tour t", Tour.class).getResultList();
+        return em.createQuery("SELECT t FROM Tour t WHERE t.status = cz.cvut.fel.nss.entity.TourStatus.ACTIVE", Tour.class).getResultList();
     }
 
     @Override
@@ -53,7 +57,7 @@ public class TourDao implements  GenericDao<Tour> {
     @Override
     public List<Tour> findByDate(LocalDate startDate, LocalDate endDate) {
         return em.createQuery("SELECT t FROM Tour t WHERE t.startDate >= :startDate\n" +
-                        "                  AND t.endDate <= :endDate", Tour.class)
+                        "                  AND t.endDate <= :endDate AND t.status = cz.cvut.fel.nss.entity.TourStatus.ACTIVE", Tour.class)
                 .setParameter("startDate", startDate)
                 .setParameter("endDate", endDate)
                 .getResultList();

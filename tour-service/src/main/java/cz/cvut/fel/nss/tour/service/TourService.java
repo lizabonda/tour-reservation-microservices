@@ -7,6 +7,7 @@ import cz.cvut.fel.nss.tour.client.BookingClient;
 import cz.cvut.fel.nss.tour.dao.TourDao;
 import cz.cvut.fel.nss.tour.dto.TourDto;
 import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
+import cz.cvut.fel.nss.tour.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,8 +44,12 @@ public class TourService {
 
     public void cancelTour (Long tourId) {
         Tour tour = tourDao.find(tourId);
+        if (tour == null) {
+            throw new NotFoundException("Tour not found: " + tourId);
+        }
         tour.setStatus(TourStatus.CANCELLED);
-        bookingClient.cancelBookingsByTour(tourId);
+        tourDao.update(tour);
+        bookingClient.cancelBookingsByTourId(tourId);
 
     }
 }

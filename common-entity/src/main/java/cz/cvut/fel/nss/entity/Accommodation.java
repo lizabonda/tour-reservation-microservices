@@ -24,10 +24,14 @@ public class Accommodation {
     @NotNull
     @Column(nullable = false)
     private String roomType;
-
+    @NotNull
+    @Column(nullable = false)
     private int capacity;
+    @NotNull
+    @Column(nullable = false)
     private double pricePerNight;
-
+    @NotNull
+    @Column(nullable = false)
     @Enumerated(value=EnumType.STRING)
     private MealPlan mealPlan;
 

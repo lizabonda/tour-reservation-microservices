@@ -1,5 +1,6 @@
 package cz.cvut.fel.nss.booking.dto;
 
+import cz.cvut.fel.nss.entity.BookingStatus;
 import java.util.List;
 
 public record BookingDto(Long id,
@@ -7,6 +8,7 @@ public record BookingDto(Long id,
                          Long tourId,
                          List<Long> personIds,
                          List<Long> reservationIds,
-                         double totalPrice){
+                         double totalPrice,
+                         BookingStatus status){
 
 }

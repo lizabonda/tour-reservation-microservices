@@ -20,7 +20,7 @@ public class AccommodationController {
     }
 
     @PostMapping
-    ResponseEntity<AccommodationDto> createTour (@RequestBody AccommodationDto accommodationDto) {
+    ResponseEntity<AccommodationDto> createAccommodation (@RequestBody AccommodationDto accommodationDto) {
         Accommodation created = accommodationService.createAccommodation(accommodationDto);
         AccommodationDto response = accommodationMapper.accommodationToAccommodationDto(created);
         return ResponseEntity

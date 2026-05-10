@@ -53,15 +53,13 @@ class BookingController {
     }
 
 
-    @PatchMapping("/by-tour")
-    ResponseEntity<Void> removeBookingsByTour(
-            @RequestParam Long tourId
-    ) {
+    @PatchMapping("/tour/cancel/{tourId}")
+    ResponseEntity<Void> cancelBookingsByTourId(@PathVariable Long tourId) {
         bookingService.cancelBookingByTour(tourId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping ("/{id}")
     // when we delete accomodation
     ResponseEntity<Void> removeBookingByIdInternally(@PathVariable Long id) {
         bookingService.removeBookingByIdBySystem(id);
@@ -69,8 +67,8 @@ class BookingController {
     }
 
     //when user delete booking
-    @DeleteMapping("cancel/user/{id}")
-    ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
+    @DeleteMapping("/user/{id}")
+    ResponseEntity<Void> cancelBookingByUser(@PathVariable("id") Long id) {
         bookingService.cancelBookingByUser(id);
         return ResponseEntity.noContent().build();
     }
