@@ -53,7 +53,7 @@ class BookingController {
     }
 
 
-    @PatchMapping("/tour/cancel/{tourId}")
+    @PutMapping("/tour/cancel/{tourId}")
     ResponseEntity<Void> cancelBookingsByTourId(@PathVariable Long tourId) {
         bookingService.cancelBookingByTour(tourId);
         return ResponseEntity.noContent().build();

@@ -18,15 +18,12 @@ public class TourDao implements  GenericDao<Tour> {
     public Tour find(Long id) {
         Objects.requireNonNull(id);
         Tour tour = em.find(Tour.class, id);
-        if (tour != null && tour.getStatus() == cz.cvut.fel.nss.entity.TourStatus.CANCELLED) {
-            return null;
-        }
         return tour;
     }
 
     @Override
     public List<Tour> findAll() {
-        return em.createQuery("SELECT t FROM Tour t WHERE t.status = cz.cvut.fel.nss.entity.TourStatus.ACTIVE", Tour.class).getResultList();
+        return em.createQuery("SELECT t FROM Tour t", Tour.class).getResultList();
     }
 
     @Override

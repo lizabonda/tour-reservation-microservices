@@ -9,10 +9,12 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="PERSON_TYPE",
         discriminatorType=DiscriminatorType.INTEGER)
+@DiscriminatorValue("0")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_seq")
     @SequenceGenerator(name = "person_seq", sequenceName = "person_seq", allocationSize = 1)
+
     private Long id;
     @NotNull
     @Column(nullable = false)

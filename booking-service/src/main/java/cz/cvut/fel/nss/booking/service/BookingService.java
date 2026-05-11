@@ -83,8 +83,7 @@ public class BookingService {
 
         // tour capacity validation
         int requestedSize = booking.getPersonIds().size();
-        int occupied = bookingDao.countPersonsByTour(tour.id());
-        if (requestedSize + occupied > tour.capacity()) {
+        if (requestedSize > tour.capacity()) {
             throw new IllegalStateException("Tour capacity exceeded: capacity=" + tour.capacity());
         }
 
@@ -114,6 +113,7 @@ public class BookingService {
         booking.setReservationIds(createdReservations.stream().map(ReservationDto::id).collect(Collectors.toList()));
         bookingDao.update(booking);
 
+        tourClient.updateCapacity(tour.id(), -requestedSize);
         log.info("Booking created with id: {}, total price: {}", booking.getId(), booking.getTotalPrice());
 
         return booking;
@@ -170,6 +170,7 @@ public class BookingService {
         }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.update(booking);
+        tourClient.updateCapacity(booking.getTourId(), booking.getPersonIds().size());
     }
 
     public void cancelBookingByUser(Long id) {
@@ -184,6 +185,7 @@ public class BookingService {
         }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.update(booking);
+        tourClient.updateCapacity(booking.getTourId(), booking.getPersonIds().size());
     }
 }
 

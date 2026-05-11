@@ -38,6 +38,9 @@ public class TourService {
 
     public Tour createTour(TourDto tourDto) {
         Tour tour = tourMapper.tourDtoToTour(tourDto);
+        if (tour.getStatus() == null) {
+            tour.setStatus(TourStatus.ACTIVE);
+        }
         tourDao.save(tour);
         return tour;
     }
@@ -51,6 +54,19 @@ public class TourService {
         tourDao.update(tour);
         bookingClient.cancelBookingsByTourId(tourId);
 
+    }
+
+    public void updateCapacity(Long tourId, int change) {
+        Tour tour = tourDao.find(tourId);
+        if (tour == null) {
+            throw new NotFoundException("Tour not found: " + tourId);
+        }
+        int newCapacity = tour.getCapacity() + change;
+        if (newCapacity < 0) {
+            throw new IllegalStateException("Tour capacity cannot be negative");
+        }
+        tour.setCapacity(newCapacity);
+        tourDao.update(tour);
     }
 }
 

@@ -3,6 +3,7 @@ package cz.cvut.fel.nss.tour.controller;
 import cz.cvut.fel.nss.entity.Tour;
 import cz.cvut.fel.nss.tour.dto.TourDto;
 import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
+import cz.cvut.fel.nss.tour.exception.NotFoundException;
 import cz.cvut.fel.nss.tour.service.TourService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class TourController {
     public TourDto getTour(@PathVariable Long id) {
         Tour tour = tourService.findById(id);
         if (tour == null) {
-            return null;
+            throw new NotFoundException("Tour not found with id: " + id);
         }
         return tourMapper.tourToTourDto(tour);
     }
@@ -47,9 +48,15 @@ public class TourController {
                 .body(response);
     }
 
-    @PatchMapping("/{id}")
+    @DeleteMapping("/{id}")
     ResponseEntity<Void> cancelTour(@PathVariable Long id) {
         tourService.cancelTour(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/capacity")
+    public ResponseEntity<Void> updateCapacity(@PathVariable Long id, @RequestParam int change) {
+        tourService.updateCapacity(id, change);
         return ResponseEntity.noContent().build();
     }
 }
