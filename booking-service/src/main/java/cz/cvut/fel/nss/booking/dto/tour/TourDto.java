@@ -1,5 +1,6 @@
 package cz.cvut.fel.nss.booking.dto.tour;
 
+import cz.cvut.fel.nss.entity.TourStatus;
 import java.time.LocalDate;
 
 public record TourDto(Long id,
@@ -7,5 +8,6 @@ public record TourDto(Long id,
                       LocalDate startDate,
                       LocalDate endDate,
                       int capacity,
-                      double price
+                      double price,
+                      TourStatus status
 ) {}

@@ -11,7 +11,12 @@ import java.util.List;
 @NamedQuery(name = "Tour.findByDestinationAndStartDate", query = "SELECT t FROM Tour t WHERE t.destination = :destination AND t.startDate = :date")
 public class Tour {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tour_seq")
+    @SequenceGenerator(
+            name = "tour_seq",
+            sequenceName = "tour_id_seq",
+            allocationSize = 1
+    )
     private Long id;
     @NotNull
     @Column(nullable = false)

@@ -9,7 +9,12 @@ import java.util.List;
 @Entity
 public class Accommodation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accommodation_seq")
+    @SequenceGenerator(
+            name = "accommodation_seq",
+            sequenceName = "accommodation_id_seq",
+            allocationSize = 1
+    )
     private Long id;
     @org.jetbrains.annotations.NotNull
     @Column(nullable = false)
