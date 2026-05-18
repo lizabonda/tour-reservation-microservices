@@ -59,12 +59,12 @@ class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping ("/{id}")
-    // when we delete accomodation
-    ResponseEntity<Void> removeBookingByIdInternally(@PathVariable Long id) {
-        bookingService.removeBookingByIdBySystem(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping ("/{id}")
+//    // when we delete accomodation
+//    ResponseEntity<Void> removeBookingByIdInternally(@PathVariable Long id) {
+//        bookingService.removeBookingByIdBySystem(id);
+//        return ResponseEntity.noContent().build();
+//    }
 
     //when user delete booking
     @DeleteMapping("/user/{id}")

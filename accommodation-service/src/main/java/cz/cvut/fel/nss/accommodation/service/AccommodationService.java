@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.accommodation.service;
 
-import cz.cvut.fel.nss.accommodation.client.BookingClient;
+//import cz.cvut.fel.nss.accommodation.client.BookingClient;
 import cz.cvut.fel.nss.entity.Accommodation;
 import cz.cvut.fel.nss.entity.MealPlan;
 import cz.cvut.fel.nss.entity.Reservation;
@@ -12,6 +12,7 @@ import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.AccommodationMapper;
 import cz.cvut.fel.nss.accommodation.exception.NotFoundException;
 import cz.cvut.fel.nss.entity.ReservationStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +31,15 @@ public class AccommodationService {
     private final AccommodationDao accommodationDao;
     private final ReservationDao reservationDao;
     private final AccommodationMapper accommodationMapper;
-    private final BookingClient bookingClient;
+//    private final BookingClient bookingClient;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
 
-    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao, AccommodationMapper accommodationMapper, BookingClient bookingClient) {
+    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao, AccommodationMapper accommodationMapper,  KafkaTemplate<String, Long> kafkaTemplate) {
         this.accommodationDao = accommodationDao;
         this.reservationDao = reservationDao;
         this.accommodationMapper = accommodationMapper;
-        this.bookingClient = bookingClient;
+//        this.bookingClient = bookingClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public AccommodationPricingSummaryDto calculatePrice(List<ReservationDto> reservationsDto) {
@@ -227,11 +230,12 @@ public class AccommodationService {
         accommodationDao.update(accommodation);
         for (Long bookingId : reservationBookingIds) {
             if (bookingId != null) {
-                try {
-                    bookingClient.removeBookingByIdInternally(bookingId);
-                } catch (feign.FeignException.NotFound e) {
-                    //TODO
-                }
+                kafkaTemplate.send("booking-cancel", bookingId);
+//                try {
+//                    bookingClient.removeBookingByIdInternally(bookingId);
+//                } catch (feign.FeignException.NotFound e) {
+//                    //TODO
+//                }
             }
         }
     }
