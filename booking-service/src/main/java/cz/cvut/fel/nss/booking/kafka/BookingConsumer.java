@@ -5,15 +5,20 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccommodationDeleteConsumer {
+public class BookingConsumer {
     private final BookingService bookingService;
 
-    public AccommodationDeleteConsumer(BookingService bookingService) {
+    public BookingConsumer(BookingService bookingService) {
         this.bookingService = bookingService;
     }
 
-    @KafkaListener(topics = "booking-cancel" )
-    public void processBookingCancellation(Long bookingId) {
+    @KafkaListener(topics = "tour-cancelled" )
+    public void bookingCancellationByTour(Long tourId) {
+        bookingService.cancelBookingByTour(tourId);
+    }
+
+    @KafkaListener(topics = "accommodation-cancel" )
+    public void bookingCancellationByAccommodation(Long bookingId) {
         bookingService.removeBookingByIdBySystem(bookingId);
     }
 }

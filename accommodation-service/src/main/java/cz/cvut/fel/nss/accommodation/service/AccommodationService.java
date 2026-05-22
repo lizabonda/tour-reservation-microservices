@@ -230,7 +230,7 @@ public class AccommodationService {
         accommodationDao.update(accommodation);
         for (Long bookingId : reservationBookingIds) {
             if (bookingId != null) {
-                kafkaTemplate.send("booking-cancel", bookingId);
+                kafkaTemplate.send("accommodation-cancel", bookingId);
 //                try {
 //                    bookingClient.removeBookingByIdInternally(bookingId);
 //                } catch (feign.FeignException.NotFound e) {

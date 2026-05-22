@@ -16,7 +16,7 @@ public interface AccommodationClient {
     @PostMapping("/reservations")
     List<ReservationDto> createReservations(@RequestBody List<ReservationDto> reservationsDto, @RequestParam("bookingId") Long bookingId);
 
-    @DeleteMapping ("/reservations/booking/cancel/{bookingId}")
-    ResponseEntity<Void> cancelReservationsByBookingId(@PathVariable Long bookingId);
+//    @DeleteMapping ("/reservations/booking/cancel/{bookingId}")
+//    ResponseEntity<Void> cancelReservationsByBookingId(@PathVariable Long bookingId);
 
 }

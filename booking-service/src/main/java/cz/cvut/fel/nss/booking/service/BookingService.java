@@ -2,6 +2,9 @@ package cz.cvut.fel.nss.booking.service;
 
 import cz.cvut.fel.nss.booking.dto.accommodation.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.booking.dto.accommodation.ReservationDto;
+import cz.cvut.fel.nss.booking.dto.booking.BookingEvent;
+import cz.cvut.fel.nss.booking.dto.booking.BookingDto;
+import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.tour.TourDto;
 import cz.cvut.fel.nss.booking.dto.user.PersonDto;
 
@@ -10,12 +13,12 @@ import cz.cvut.fel.nss.booking.client.AccommodationClient;
 import cz.cvut.fel.nss.booking.client.TourClient;
 import cz.cvut.fel.nss.booking.client.UserClient;
 import cz.cvut.fel.nss.booking.dao.BookingDao;
-import cz.cvut.fel.nss.booking.dto.*;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
 import cz.cvut.fel.nss.booking.exception.NotFoundException;
 import cz.cvut.fel.nss.entity.BookingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,18 +40,20 @@ public class BookingService {
     private final TourClient tourClient;
     private final UserClient userClient;
     private final AccommodationClient accommodationClient;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
 
     public BookingService(BookingDao bookingDao,
                           BookingMapper bookingMapper,
                           TourClient tourClient,
                           UserClient userClient,
-                          AccommodationClient accommodationClient) {
+                          AccommodationClient accommodationClient, KafkaTemplate<String, Object> kafkaTemplate) {
         this.bookingDao = bookingDao;
         this.bookingMapper = bookingMapper;
         this.tourClient = tourClient;
         this.userClient = userClient;
         this.accommodationClient = accommodationClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public Booking createBookingFromDto(CreateBookingDTO dto) {
@@ -113,7 +118,8 @@ public class BookingService {
         booking.setReservationIds(createdReservations.stream().map(ReservationDto::id).collect(Collectors.toList()));
         bookingDao.update(booking);
 
-        tourClient.updateCapacity(tour.id(), -requestedSize);
+        BookingEvent event = new BookingEvent(booking.getId(), tour.id(),-requestedSize );
+        kafkaTemplate.send("tour-capacity", event);
         log.info("Booking created with id: {}, total price: {}", booking.getId(), booking.getTotalPrice());
 
         return booking;
@@ -142,14 +148,16 @@ public class BookingService {
         List<Booking> bookings = bookingDao.findAllByTour(tourId);
         for (Booking booking : bookings) {
             if (booking.getStatus() != BookingStatus.CANCELLED) {
-                try {
-                    accommodationClient.cancelReservationsByBookingId(booking.getId());
-                } catch (feign.FeignException.NotFound e) {
-                    log.warn("Reservations for booking {} not found during cancellation", booking.getId());
-                }
+                BookingEvent event= new BookingEvent(booking.getId(), tourId,booking.getPersonIds().size());
+                kafkaTemplate.send("booking-cancelled", event);
+//                try {
+//                    accommodationClient.cancelReservationsByBookingId(booking.getId());
+//                } catch (feign.FeignException.NotFound e) {
+//                    log.warn("Reservations for booking {} not found during cancellation", booking.getId());
+//                }
+                booking.setStatus(BookingStatus.CANCELLED);
+                bookingDao.update(booking);
             }
-            booking.setStatus(BookingStatus.CANCELLED);
-            bookingDao.update(booking);
         }
         }
 
@@ -170,7 +178,8 @@ public class BookingService {
         }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.update(booking);
-        tourClient.updateCapacity(booking.getTourId(), booking.getPersonIds().size());
+        BookingEvent event= new BookingEvent(booking.getId(),booking.getTourId(), booking.getPersonIds().size());
+        kafkaTemplate.send("tour-capacity", event);
     }
 
     public void cancelBookingByUser(Long id) {
@@ -178,14 +187,13 @@ public class BookingService {
         if (booking == null || booking.getStatus() == BookingStatus.CANCELLED) {
             return;
         }
-        try {
-            accommodationClient.cancelReservationsByBookingId(id);
-        } catch (feign.FeignException.NotFound e) {
-            log.warn("Reservations for booking {} not found during cancellation by user", id);
-        }
+        int personsCount = booking.getPersonIds().size();
+        BookingEvent event= new BookingEvent(booking.getId(), booking.getTourId(),  personsCount);
+
+        kafkaTemplate.send("tour-capacity", event);
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.update(booking);
-        tourClient.updateCapacity(booking.getTourId(), booking.getPersonIds().size());
+//        tourClient.updateCapacity(booking.getTourId(), booking.getPersonIds().size());
     }
 }
 

@@ -54,9 +54,9 @@ public class TourController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/capacity")
-    public ResponseEntity<Void> updateCapacity(@PathVariable Long id, @RequestParam int change) {
-        tourService.updateCapacity(id, change);
-        return ResponseEntity.noContent().build();
-    }
+//    @PutMapping("/{id}/capacity")
+//    public ResponseEntity<Void> updateCapacity(@PathVariable Long id, @RequestParam int change) {
+//        tourService.updateCapacity(id, change);
+//        return ResponseEntity.noContent().build();
+//    }
 }
