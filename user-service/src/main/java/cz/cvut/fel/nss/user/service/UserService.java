@@ -3,10 +3,12 @@ package cz.cvut.fel.nss.user.service;
 import cz.cvut.fel.nss.entity.Person;
 import cz.cvut.fel.nss.user.dao.PersonDao;
 import cz.cvut.fel.nss.user.dto.PersonDto;
+import cz.cvut.fel.nss.user.dto.mapper.PersonMapper;
 import cz.cvut.fel.nss.user.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +17,11 @@ import java.util.List;
 public class UserService {
 
     private final PersonDao personDao;
+    private final PersonMapper personMapper;
 
-    public UserService(PersonDao personDao) {
+    public UserService(PersonDao personDao, PersonMapper personMapper) {
         this.personDao = personDao;
+        this.personMapper = personMapper;
     }
 
     // We support 2 modes:
@@ -51,11 +55,11 @@ public class UserService {
             if (personDto.dateOfBirth() == null) {
                 throw new IllegalArgumentException("Person must have dateOfBirth when id is not provided");
             }
+            if (personDto.dateOfBirth().isAfter(LocalDate.now())) {
+                throw new IllegalArgumentException("Date of birth cannot be in the future");
+            }
 
-            final Person person = new Person();
-            person.setFirstName(personDto.firstName());
-            person.setLastName(personDto.lastName());
-            person.setDateOfBirth(personDto.dateOfBirth());
+            final Person person = personMapper.personDtoToPerson(personDto);
             personDao.save(person);
             persons.add(person);
         }

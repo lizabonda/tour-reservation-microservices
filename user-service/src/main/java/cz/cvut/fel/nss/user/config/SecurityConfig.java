@@ -18,13 +18,11 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/users/find-or-create").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        // Access rules
+                        .requestMatchers("/users/find-or-create").hasAnyRole("ADMIN", "CUSTOMER")
 
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

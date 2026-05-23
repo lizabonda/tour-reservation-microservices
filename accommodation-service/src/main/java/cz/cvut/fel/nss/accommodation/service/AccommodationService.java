@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.accommodation.service;
 
-import cz.cvut.fel.nss.accommodation.client.BookingClient;
+//import cz.cvut.fel.nss.accommodation.client.BookingClient;
 import cz.cvut.fel.nss.entity.Accommodation;
 import cz.cvut.fel.nss.entity.MealPlan;
 import cz.cvut.fel.nss.entity.Reservation;
@@ -12,6 +12,7 @@ import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.AccommodationMapper;
 import cz.cvut.fel.nss.accommodation.exception.NotFoundException;
 import cz.cvut.fel.nss.entity.ReservationStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +31,15 @@ public class AccommodationService {
     private final AccommodationDao accommodationDao;
     private final ReservationDao reservationDao;
     private final AccommodationMapper accommodationMapper;
-    private final BookingClient bookingClient;
+//    private final BookingClient bookingClient;
+    private final KafkaTemplate<String, Long> kafkaTemplate;
 
-    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao, AccommodationMapper accommodationMapper, BookingClient bookingClient) {
+    public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao, AccommodationMapper accommodationMapper,  KafkaTemplate<String, Long> kafkaTemplate) {
         this.accommodationDao = accommodationDao;
         this.reservationDao = reservationDao;
         this.accommodationMapper = accommodationMapper;
-        this.bookingClient = bookingClient;
+//        this.bookingClient = bookingClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public AccommodationPricingSummaryDto calculatePrice(List<ReservationDto> reservationsDto) {
@@ -45,7 +48,6 @@ public class AccommodationService {
         }
 
         double accommodationPrice = 0.0;
-        double allInclusiveCharge = 0.0;
 
         for (ReservationDto reservationDto : reservationsDto) {
             if (reservationDto == null) {
@@ -75,13 +77,16 @@ public class AccommodationService {
                 reservationPrice += reservation.getReservationPrice() * ALL_INCLUSIVE_PERCENT;
             }
 
-            accommodationPrice += reservation.getReservationPrice();
+            accommodationPrice += reservationPrice;
         }
 
         return new AccommodationPricingSummaryDto(accommodationPrice);
     }
 
     public List<Reservation> createReservations(List<ReservationDto> reservationsDto, Long bookingId) {
+        if (reservationsDto == null || reservationsDto.isEmpty()) {
+            throw new IllegalArgumentException("Reservations must not be empty");
+        }
         final List<Reservation> reservations = new ArrayList<>(reservationsDto.size());
         if (bookingId == null) {
             throw new IllegalArgumentException("Booking id must not be null");
@@ -118,16 +123,17 @@ public class AccommodationService {
             reservation.setEndDate(endDate);
             reservation.setAccommodation(accommodation);
             reservation.setBookingId(bookingId);
-            int persons = reservationDto.numberOfPersons() > 0 ? reservationDto.numberOfPersons() : 1;
+            if (reservationDto.numberOfPersons() <= 0) {
+                throw new IllegalArgumentException("Number of persons must be positive");
+            }
+            int persons = reservationDto.numberOfPersons();
             reservation.setNumberOfPersons(persons);
             reservation.calculateReservationPrice();
             validationForReservation(reservation);
             
-            if (accommodation.getCapacity() < persons) {
-                throw new IllegalStateException("Not enough capacity in accommodation");
+            if (persons > accommodation.getCapacity()) {
+                throw new IllegalStateException("Too many persons for this accommodation");
             }
-            accommodation.setCapacity(accommodation.getCapacity() - persons);
-            accommodationDao.update(accommodation);
 
             reservationDao.save(reservation);
             reservations.add(reservation);
@@ -157,6 +163,9 @@ public class AccommodationService {
     }
 
     public void updateBookingAccommodation(Long reservationId, Long newaccommodationId) {
+        if (newaccommodationId == null) {
+            throw new IllegalArgumentException("New accommodation id must not be null");
+        }
 
         Reservation r = reservationDao.find(reservationId);
         if (r == null) {
@@ -181,17 +190,13 @@ public class AccommodationService {
             throw new IllegalStateException("Accommodation is not available for given dates");
         }
 
-        Accommodation oldAccommodation = r.getAccommodation();
-        int persons = r.getNumberOfPersons() > 0 ? r.getNumberOfPersons() : 1;
-        if (oldAccommodation != null) {
-            oldAccommodation.setCapacity(oldAccommodation.getCapacity() + persons);
-            accommodationDao.update(oldAccommodation);
+        if (r.getNumberOfPersons() <= 0) {
+            throw new IllegalStateException("Reservation number of persons must be positive");
         }
-        if (newAccommodation.getCapacity() < persons) {
-            throw new IllegalStateException("Not enough capacity in new accommodation");
+        int persons = r.getNumberOfPersons();
+        if (persons > newAccommodation.getCapacity()) {
+            throw new IllegalStateException("Too many persons for new accommodation");
         }
-        newAccommodation.setCapacity(newAccommodation.getCapacity() - persons);
-        accommodationDao.update(newAccommodation);
 
         r.setAccommodation(newAccommodation);
         r.calculateReservationPrice();
@@ -207,7 +212,7 @@ public class AccommodationService {
     public void deleteAccommodation(Long id) {
         Accommodation accommodation = accommodationDao.find(id);
         if (accommodation == null) {
-            throw new RuntimeException("Accommodation not found: " + id);
+            throw new NotFoundException("Accommodation not found: " + id);
         }
         accommodation.setDeleted(true);
         accommodationDao.update(accommodation);
@@ -218,20 +223,18 @@ public class AccommodationService {
         for (Reservation res : reservations) {
             if (res.getStatus() != ReservationStatus.CANCELLED) {
                 res.setStatus(ReservationStatus.CANCELLED);
-                int persons = res.getNumberOfPersons() > 0 ? res.getNumberOfPersons() : 1;
-                accommodation.setCapacity(accommodation.getCapacity() + persons);
                 reservationDao.update(res);
                 reservationBookingIds.add(res.getBookingId());
             }
         }
-        accommodationDao.update(accommodation);
         for (Long bookingId : reservationBookingIds) {
             if (bookingId != null) {
-                try {
-                    bookingClient.removeBookingByIdInternally(bookingId);
-                } catch (feign.FeignException.NotFound e) {
-                    //TODO
-                }
+                kafkaTemplate.send("accommodation-cancel", bookingId);
+//                try {
+//                    bookingClient.removeBookingByIdInternally(bookingId);
+//                } catch (feign.FeignException.NotFound e) {
+//                    //TODO
+//                }
             }
         }
     }
@@ -241,12 +244,6 @@ public class AccommodationService {
         for (Reservation res : reservations) {
             if (res.getStatus() != ReservationStatus.CANCELLED) {
                 res.setStatus(ReservationStatus.CANCELLED);
-                Accommodation accommodation = res.getAccommodation();
-                if (accommodation != null) {
-                    int persons = res.getNumberOfPersons() > 0 ? res.getNumberOfPersons() : 1;
-                    accommodation.setCapacity(accommodation.getCapacity() + persons);
-                    accommodationDao.update(accommodation);
-                }
                 reservationDao.update(res);
             }
         }

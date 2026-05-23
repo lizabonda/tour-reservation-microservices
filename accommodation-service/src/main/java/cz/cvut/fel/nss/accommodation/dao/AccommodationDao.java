@@ -17,12 +17,15 @@ public class AccommodationDao implements GenericDao<Accommodation> {
     public Accommodation find(Long id) {
         Objects.requireNonNull(id);
         Accommodation accommodation = em.find(Accommodation.class, id);
+        if (accommodation != null && accommodation.isDeleted()) {
+            return null;
+        }
         return accommodation;
     }
 
     @Override
     public List<Accommodation> findAll() {
-        return em.createQuery("SELECT a FROM Accommodation a", Accommodation.class).getResultList();
+        return em.createQuery("SELECT a FROM Accommodation a WHERE a.deleted = false", Accommodation.class).getResultList();
     }
 
     @Override

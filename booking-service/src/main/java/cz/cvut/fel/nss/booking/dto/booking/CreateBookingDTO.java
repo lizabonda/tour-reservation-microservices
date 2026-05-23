@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.booking.dto;
+package cz.cvut.fel.nss.booking.dto.booking;
 
 import java.util.List;
 

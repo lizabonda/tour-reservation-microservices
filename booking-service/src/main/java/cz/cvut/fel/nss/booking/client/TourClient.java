@@ -12,6 +12,6 @@ public interface TourClient {
     @GetMapping("/tours/{id}")
     TourDto getTour(@PathVariable("id") Long id);
 
-    @PutMapping("/tours/{id}/capacity")
-    void updateCapacity(@PathVariable("id") Long id, @RequestParam("change") int change);
+//    @PutMapping("/tours/{id}/capacity")
+//    void updateCapacity(@PathVariable("id") Long id, @RequestParam("change") int change);
 }

@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
         name = "Reservation.findIntersection",
         query = "SELECT r from Reservation r " +
                 "WHERE r.accommodation.id = :accommodationId " +
+                "AND r.accommodation.deleted = false " +
                 "AND r.endDate > :from " +
                 "AND r.startDate < :to " +
                 "AND r.status != cz.cvut.fel.nss.entity.ReservationStatus.CANCELLED " +
