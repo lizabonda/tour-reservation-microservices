@@ -1,31 +1,25 @@
 package cz.cvut.fel.nss.booking;
 
+import cz.cvut.fel.nss.booking.strategy.DiscountStrategy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 public class BookingPricingService {
-    private static final int EARLY_DAYS = 45;
-    private static final int LASTMINUTE_DAYS = 14;
-    private static final double LASTMINUTE_DAYS_DISCOUNT = 0.15;
-    private static final double EARLY_DAYS_DISCOUNT = 0.1;
 
+    private final List<DiscountStrategy> discountStrategies;
 
-    public double discount(LocalDate createdAt, LocalDate tourStartDate, double basePrice) {
-        long days = ChronoUnit.DAYS.between(createdAt, tourStartDate);
-        double discount = 0.0;
-        if (days >= EARLY_DAYS) {
-            double earlyDiscount = basePrice * EARLY_DAYS_DISCOUNT;
-            discount = earlyDiscount;
-        } else if (days <= LASTMINUTE_DAYS) {
-            double last_minute_discount = basePrice * LASTMINUTE_DAYS_DISCOUNT;
-            discount = last_minute_discount;
-        }
-        return discount;
+    public BookingPricingService(List<DiscountStrategy> discountStrategies) {
+        this.discountStrategies = discountStrategies;
     }
 
+    public double discount(LocalDate createdAt, LocalDate tourStartDate, double basePrice) {
+        DiscountStrategy strategy = resolveStrategy(createdAt, tourStartDate);
+        return strategy.calculateDiscount(basePrice);
+    }
 
     public double totalPrice(LocalDate createdAt,
                              LocalDate tourStartDate,
@@ -34,6 +28,7 @@ public class BookingPricingService {
                              double allInclusiveCharge) {
         double basePrice = tourPrice + accommodationPrice;
         double discount = discount(createdAt, tourStartDate, basePrice);
+
         return basePrice - discount + allInclusiveCharge;
     }
 
@@ -44,28 +39,13 @@ public class BookingPricingService {
                               double accommodationPrice,
                               double allInclusiveCharge) {
         double basePrice = tourPrice + accommodationPrice;
-        double discount = discount(createdAt, tourStartDate, basePrice);
-        double total = totalPrice(createdAt, tourStartDate, tourPrice, accommodationPrice, allInclusiveCharge);
+        DiscountStrategy strategy = resolveStrategy(createdAt, tourStartDate);
 
+        double discount = strategy.calculateDiscount(basePrice);
+        double total = basePrice - discount + allInclusiveCharge;
         long days = ChronoUnit.DAYS.between(createdAt, tourStartDate);
 
-        String discountExplain;
-        if (days >= EARLY_DAYS) {
-            discountExplain = String.format(
-                    "Early booking discount: days=%d >= %d -> discount = base(%.2f) * %.2f = %.2f",
-                    days, EARLY_DAYS, basePrice, EARLY_DAYS_DISCOUNT, discount
-            );
-        } else if (days <= LASTMINUTE_DAYS) {
-            discountExplain = String.format(
-                    "Last-minute discount: days=%d <= %d -> discount = base(%.2f) * %.2f = %.2f",
-                    days, LASTMINUTE_DAYS, basePrice, LASTMINUTE_DAYS_DISCOUNT, discount
-            );
-        } else {
-            discountExplain = String.format(
-                    "No discount applied: days=%d is between %d and %d -> discount = 0.00",
-                    days, LASTMINUTE_DAYS, EARLY_DAYS
-            );
-        }
+        String discountExplain = strategy.explain(createdAt, tourStartDate, basePrice);
 
         return String.format("""
                 -- Price breakdown for booking %s --
@@ -87,5 +67,12 @@ public class BookingPricingService {
                 allInclusiveCharge,
                 basePrice, discount, allInclusiveCharge, total
         );
+    }
+
+    private DiscountStrategy resolveStrategy(LocalDate createdAt, LocalDate tourStartDate) {
+        return discountStrategies.stream()
+                .filter(strategy -> strategy.supports(createdAt, tourStartDate))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No discount strategy found"));
     }
 }
