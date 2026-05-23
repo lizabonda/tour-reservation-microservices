@@ -41,6 +41,9 @@ public class BookingManagerFacade {
         if (tour == null) {
             throw new NotFoundException("Tour not found: " + dto.tourId());
         }
+        if (tour.status() != cz.cvut.fel.nss.entity.TourStatus.ACTIVE) {
+            throw new IllegalStateException("Tour is not active");
+        }
 
         // 2. User/Person management
         List<PersonDto> personsDtoInput = dto.persons().stream()

@@ -20,10 +20,7 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/h2-console/**").permitAll()
                         // access rules
                         .requestMatchers(HttpMethod.PUT, "/tours/*/capacity").hasAnyRole("ADMIN", "CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/tours/**").hasRole("ADMIN")

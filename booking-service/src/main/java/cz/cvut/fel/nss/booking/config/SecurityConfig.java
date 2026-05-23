@@ -20,19 +20,14 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/h2-console/**").permitAll()
                         // Booking access rules
                         .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.PUT,  "/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/api/bookings/user/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.DELETE,"/api/bookings/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH,"/api/bookings/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.GET,  "/api/bookings/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/bookings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/bookings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/bookings/**").hasRole("ADMIN")
 
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

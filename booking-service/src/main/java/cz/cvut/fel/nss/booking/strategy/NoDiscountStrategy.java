@@ -1,10 +1,12 @@
 package cz.cvut.fel.nss.booking.strategy;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Component
+@Order(2)
 public class NoDiscountStrategy implements DiscountStrategy {
     private static final int EARLY_DAYS = 45;
     private static final int LASTMINUTE_DAYS = 14;

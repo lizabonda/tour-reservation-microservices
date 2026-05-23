@@ -2,6 +2,7 @@ package cz.cvut.fel.nss.apigateway.logger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
  * Implementation of LoggerBuilder interface for building the log message and logging it.
  */
 @Service
+@Scope("prototype")
 public class LoggerBuilderImpl implements LoggerBuilder {
     private String delimiter;
     private final List<String> logMessageParts;
