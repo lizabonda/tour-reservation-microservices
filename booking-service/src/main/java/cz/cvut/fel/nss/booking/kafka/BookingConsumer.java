@@ -1,5 +1,6 @@
 package cz.cvut.fel.nss.booking.kafka;
 
+import cz.cvut.fel.nss.avro.BookingEvent;
 import cz.cvut.fel.nss.booking.service.BookingService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -13,12 +14,12 @@ public class BookingConsumer {
     }
 
     @KafkaListener(topics = "tour-cancelled" )
-    public void bookingCancellationByTour(Long tourId) {
-        bookingService.cancelBookingByTour(tourId);
+    public void bookingCancellationByTour(BookingEvent event) {
+        bookingService.cancelBookingByTour(event.getTourId());
     }
 
     @KafkaListener(topics = "accommodation-cancel" )
-    public void bookingCancellationByAccommodation(Long bookingId) {
-        bookingService.removeBookingByIdBySystem(bookingId);
+    public void bookingCancellationByAccommodation(BookingEvent event) {
+        bookingService.removeBookingByIdBySystem(event.getBookingId());
     }
 }

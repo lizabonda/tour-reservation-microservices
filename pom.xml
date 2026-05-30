@@ -40,7 +40,15 @@
         <java.version>17</java.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <avro.version>1.11.3</avro.version>
+        <confluent.version>7.4.0</confluent.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>

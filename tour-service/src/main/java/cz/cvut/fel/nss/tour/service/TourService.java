@@ -36,11 +36,13 @@ public class TourService {
 
     @Cacheable(value = "tours", key = "#id")
     public Tour findById(Long id) {
+        System.out.println("Loading tour from DB, id = " + id);
         return tourDao.find(id);
     }
 
     @Cacheable(value = "toursByDate", key = "#startDate + ':' + #endDate")
     public List<Tour> findByDate(LocalDate startDate, LocalDate endDate) {
+        System.out.println("Loading tours from DB, startDate = " + startDate + ", endDate = " + endDate);
         if (startDate == null || endDate == null) {
             throw new IllegalArgumentException("Invalid date range");
         }
