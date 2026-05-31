@@ -1,8 +1,6 @@
 package cz.cvut.fel.nss.tour.dto;
-import cz.cvut.fel.nss.tour.TourStatus;
+import cz.cvut.fel.nss.tour.entity.TourStatus;
 import java.time.LocalDate;
-
-import java.util.List;
 
 public record TourDto(Long id,
                       String title,

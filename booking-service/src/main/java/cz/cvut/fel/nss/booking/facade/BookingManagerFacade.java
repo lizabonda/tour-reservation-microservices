@@ -1,6 +1,7 @@
 package cz.cvut.fel.nss.booking.facade;
 
-import cz.cvut.fel.nss.booking.BookingPricingService;
+import cz.cvut.fel.nss.booking.entity.TourStatus;
+import cz.cvut.fel.nss.booking.service.BookingPricingService;
 import cz.cvut.fel.nss.booking.client.AccommodationClient;
 import cz.cvut.fel.nss.booking.client.TourClient;
 import cz.cvut.fel.nss.booking.client.UserClient;
@@ -9,8 +10,8 @@ import cz.cvut.fel.nss.booking.dto.accommodation.ReservationDto;
 import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.tour.TourDto;
 import cz.cvut.fel.nss.booking.dto.user.PersonDto;
-import cz.cvut.fel.nss.booking.exception.NotFoundException;
-import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.exception.NotFoundException;
+import cz.cvut.fel.nss.booking.entity.Booking;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -40,7 +41,7 @@ public class BookingManagerFacade {
         if (tour == null) {
             throw new NotFoundException("Tour not found: " + dto.tourId());
         }
-        if (tour.status() != cz.cvut.fel.nss.booking.TourStatus.ACTIVE) {
+        if (tour.status() != TourStatus.ACTIVE) {
             throw new IllegalStateException("Tour is not active");
         }
 

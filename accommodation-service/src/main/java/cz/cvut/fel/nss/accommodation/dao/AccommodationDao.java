@@ -1,6 +1,7 @@
 package cz.cvut.fel.nss.accommodation.dao;
 
-import cz.cvut.fel.nss.accommodation.Accommodation;
+
+import cz.cvut.fel.nss.accommodation.entity.Accommodation;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -52,4 +53,4 @@ public class AccommodationDao implements GenericDao<Accommodation> {
         if (toRemove != null) {
             em.remove(toRemove);
         }
-}}
+    }}

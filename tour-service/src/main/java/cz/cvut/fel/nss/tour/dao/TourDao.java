@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.tour.dao;
 
-import cz.cvut.fel.nss.tour.Tour;
-import cz.cvut.fel.nss.tour.TourStatus;
+import cz.cvut.fel.nss.tour.entity.Tour;
+import cz.cvut.fel.nss.tour.entity.TourStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;

@@ -22,9 +22,9 @@ class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+
                         .requestMatchers("/h2-console/**").permitAll()
-                        // access rules
+
                         .requestMatchers(HttpMethod.POST, "/accommodations/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/accommodations/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/accommodations/**").hasRole("ADMIN")

@@ -1,8 +1,7 @@
 package cz.cvut.fel.nss.booking.dao;
 
-
-import cz.cvut.fel.nss.booking.Booking;
-import cz.cvut.fel.nss.booking.BookingStatus;
+import cz.cvut.fel.nss.booking.entity.Booking;
+import cz.cvut.fel.nss.booking.entity.BookingStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;

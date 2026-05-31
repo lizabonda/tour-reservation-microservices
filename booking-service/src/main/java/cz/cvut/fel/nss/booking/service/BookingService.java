@@ -7,11 +7,11 @@ import cz.cvut.fel.nss.booking.dto.booking.BookingPersonDTO;
 import cz.cvut.fel.nss.booking.dto.booking.BookingReservationDTO;
 import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
-import cz.cvut.fel.nss.booking.exception.NotFoundException;
+import cz.cvut.fel.nss.exception.NotFoundException;
 import cz.cvut.fel.nss.booking.facade.BookingManagerFacade;
-import cz.cvut.fel.nss.booking.state.BookingStateFactory;
-import cz.cvut.fel.nss.booking.Booking;
-import cz.cvut.fel.nss.booking.BookingStatus;
+import cz.cvut.fel.nss.booking.status.BookingStateFactory;
+import cz.cvut.fel.nss.booking.entity.Booking;
+import cz.cvut.fel.nss.booking.entity.BookingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -170,24 +170,9 @@ public class BookingService {
             }
         }
 
-        // Send all notifications at the end after DB updates
         for (BookingEvent event : events) {
             kafkaTemplate.send("booking-cancelled", event);
         }
-//        List<Booking> bookings = bookingDao.findAllByTour(tourId);
-//        for (Booking booking : bookings) {
-//            if (booking.getStatus() != BookingStatus.CANCELLED) {
-//                BookingEvent event= new BookingEvent(booking.getId(), tourId,booking.getPersonIds().size());
-//                kafkaTemplate.send("booking-cancelled", event);
-//                try {
-//                    accommodationClient.cancelReservationsByBookingId(booking.getId());
-//                } catch (feign.FeignException.NotFound e) {
-//                    log.warn("Reservations for booking {} not found during cancellation", booking.getId());
-//                }
-//                BookingStateFactory.getState(booking.getStatus()).cancel(booking);
-//                bookingDao.update(booking);
-//            }
-//        }
     }
 
 
@@ -233,9 +218,6 @@ public class BookingService {
                 .build();
         kafkaTemplate.send("booking-cancelled", event);
         kafkaTemplate.send("tour-capacity", event);
-
-
-//        tourClient.updateCapacity(booking.getTourId(), booking.getPersonIds().size());
     }
 }
 
