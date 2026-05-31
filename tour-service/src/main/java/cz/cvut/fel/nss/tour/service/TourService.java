@@ -1,8 +1,9 @@
 package cz.cvut.fel.nss.tour.service;
 
 
-import cz.cvut.fel.nss.entity.Tour;
-import cz.cvut.fel.nss.entity.TourStatus;
+import cz.cvut.fel.nss.avro.BookingEvent;
+import cz.cvut.fel.nss.tour.Tour;
+import cz.cvut.fel.nss.tour.TourStatus;
 //import cz.cvut.fel.nss.tour.client.BookingClient;
 import cz.cvut.fel.nss.tour.dao.TourDao;
 import cz.cvut.fel.nss.tour.dto.TourDto;
@@ -25,9 +26,9 @@ public class TourService {
     private final TourDao tourDao;
     private final TourMapper tourMapper;
 //    private final BookingClient bookingClient;
-    private final KafkaTemplate<String, Long> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public TourService(TourDao tourDao, TourMapper tourMapper,  KafkaTemplate<String, Long> kafkaTemplate) {
+    public TourService(TourDao tourDao, TourMapper tourMapper,  KafkaTemplate<String, Object> kafkaTemplate) {
         this.tourDao = tourDao;
         this.tourMapper = tourMapper;
 //        this.bookingClient = bookingClient;
@@ -95,7 +96,7 @@ public class TourService {
         }
         tour.setStatus(TourStatus.CANCELLED);
         tourDao.update(tour);
-        kafkaTemplate.send("tour-cancelled", tourId);
+        kafkaTemplate.send("tour-cancelled", new BookingEvent(0L, tourId, 0));
 //        bookingClient.cancelBookingsByTourId(tourId);
 
     }

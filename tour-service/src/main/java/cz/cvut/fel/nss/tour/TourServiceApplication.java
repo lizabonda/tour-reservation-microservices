@@ -7,7 +7,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EntityScan(basePackages = {"cz.cvut.fel.nss.entity"})
 @EnableFeignClients
 @EnableCaching
 public class TourServiceApplication {

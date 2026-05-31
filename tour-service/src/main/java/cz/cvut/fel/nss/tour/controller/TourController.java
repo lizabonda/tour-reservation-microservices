@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.tour.controller;
 
-import cz.cvut.fel.nss.entity.Tour;
+import cz.cvut.fel.nss.tour.Tour;
 import cz.cvut.fel.nss.tour.dto.TourDto;
 import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
 import cz.cvut.fel.nss.tour.exception.NotFoundException;

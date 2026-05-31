@@ -1,12 +1,10 @@
 package cz.cvut.fel.nss.accommodation.controller;
 
-import cz.cvut.fel.nss.entity.Reservation;
+import cz.cvut.fel.nss.accommodation.Reservation;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.ReservationMapper;
 import cz.cvut.fel.nss.accommodation.service.AccommodationService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

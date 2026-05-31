@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.dao;
 
-import cz.cvut.fel.nss.entity.Person;
+import cz.cvut.fel.nss.user.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -28,6 +28,17 @@ public class PersonDao implements GenericDao<Person> {
     public void save(Person entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+    }
+
+    public Person findByDetails(String firstName, String lastName, java.time.LocalDate dateOfBirth) {
+        List<Person> results = em.createQuery(
+                "SELECT p FROM Person p WHERE p.firstName = :firstName AND p.lastName = :lastName AND p.dateOfBirth = :dateOfBirth",
+                Person.class)
+                .setParameter("firstName", firstName)
+                .setParameter("lastName", lastName)
+                .setParameter("dateOfBirth", dateOfBirth)
+                .getResultList();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     @Override

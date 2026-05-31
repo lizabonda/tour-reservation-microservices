@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.user.service;
 
-import cz.cvut.fel.nss.entity.Person;
+import cz.cvut.fel.nss.user.Person;
 import cz.cvut.fel.nss.user.dao.PersonDao;
 import cz.cvut.fel.nss.user.dto.PersonDto;
 import cz.cvut.fel.nss.user.dto.mapper.PersonMapper;
@@ -59,7 +59,13 @@ public class UserService {
                 throw new IllegalArgumentException("Date of birth cannot be in the future");
             }
 
-            final Person person = personMapper.personDtoToPerson(personDto);
+            Person person = personDao.findByDetails(personDto.firstName(), personDto.lastName(), personDto.dateOfBirth());
+            if (person != null) {
+                persons.add(person);
+                continue;
+            }
+
+            person = personMapper.personDtoToPerson(personDto);
             personDao.save(person);
             persons.add(person);
         }

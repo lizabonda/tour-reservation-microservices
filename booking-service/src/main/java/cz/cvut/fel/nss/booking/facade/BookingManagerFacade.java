@@ -10,8 +10,7 @@ import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.tour.TourDto;
 import cz.cvut.fel.nss.booking.dto.user.PersonDto;
 import cz.cvut.fel.nss.booking.exception.NotFoundException;
-import cz.cvut.fel.nss.entity.Booking;
-import org.springframework.beans.factory.annotation.Autowired;
+import cz.cvut.fel.nss.booking.Booking;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -41,7 +40,7 @@ public class BookingManagerFacade {
         if (tour == null) {
             throw new NotFoundException("Tour not found: " + dto.tourId());
         }
-        if (tour.status() != cz.cvut.fel.nss.entity.TourStatus.ACTIVE) {
+        if (tour.status() != cz.cvut.fel.nss.booking.TourStatus.ACTIVE) {
             throw new IllegalStateException("Tour is not active");
         }
 

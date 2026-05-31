@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.booking.dto.booking;
 
-import cz.cvut.fel.nss.entity.BookingStatus;
+import cz.cvut.fel.nss.booking.BookingStatus;
 import java.util.List;
 
 public record BookingDto(Long id,
