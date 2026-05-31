@@ -1,7 +1,6 @@
 package cz.cvut.fel.nss.accommodation.dto;
 
-
-import cz.cvut.fel.nss.accommodation.MealPlan;
+import cz.cvut.fel.nss.accommodation.entity.MealPlan;
 
 public record AccommodationDto(Long id,
                                String name,

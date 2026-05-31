@@ -1,10 +1,10 @@
 package cz.cvut.fel.nss.user.service;
 
-import cz.cvut.fel.nss.user.Person;
+import cz.cvut.fel.nss.user.entity.Person;
 import cz.cvut.fel.nss.user.dao.PersonDao;
 import cz.cvut.fel.nss.user.dto.PersonDto;
 import cz.cvut.fel.nss.user.dto.mapper.PersonMapper;
-import cz.cvut.fel.nss.user.exception.NotFoundException;
+import cz.cvut.fel.nss.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

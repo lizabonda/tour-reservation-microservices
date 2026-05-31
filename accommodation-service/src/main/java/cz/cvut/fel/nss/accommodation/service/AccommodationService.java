@@ -1,18 +1,17 @@
 package cz.cvut.fel.nss.accommodation.service;
 
-//import cz.cvut.fel.nss.accommodation.client.BookingClient;
 import cz.cvut.fel.nss.avro.BookingEvent;
-import cz.cvut.fel.nss.accommodation.Accommodation;
-import cz.cvut.fel.nss.accommodation.MealPlan;
-import cz.cvut.fel.nss.accommodation.Reservation;
+import cz.cvut.fel.nss.accommodation.entity.Accommodation;
+import cz.cvut.fel.nss.accommodation.entity.MealPlan;
+import cz.cvut.fel.nss.accommodation.entity.Reservation;
 import cz.cvut.fel.nss.accommodation.dao.AccommodationDao;
 import cz.cvut.fel.nss.accommodation.dao.ReservationDao;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationDto;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.AccommodationMapper;
-import cz.cvut.fel.nss.accommodation.exception.NotFoundException;
-import cz.cvut.fel.nss.accommodation.ReservationStatus;
+import cz.cvut.fel.nss.exception.NotFoundException;
+import cz.cvut.fel.nss.accommodation.entity.ReservationStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,14 +31,12 @@ public class AccommodationService {
     private final AccommodationDao accommodationDao;
     private final ReservationDao reservationDao;
     private final AccommodationMapper accommodationMapper;
-//    private final BookingClient bookingClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public AccommodationService(AccommodationDao accommodationDao, ReservationDao reservationDao, AccommodationMapper accommodationMapper,  KafkaTemplate<String, Object> kafkaTemplate) {
         this.accommodationDao = accommodationDao;
         this.reservationDao = reservationDao;
         this.accommodationMapper = accommodationMapper;
-//        this.bookingClient = bookingClient;
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -231,11 +228,6 @@ public class AccommodationService {
         for (Long bookingId : reservationBookingIds) {
             if (bookingId != null) {
                 kafkaTemplate.send("accommodation-cancel", new BookingEvent(bookingId, 0L, 0));
-//                try {
-//                    bookingClient.removeBookingByIdInternally(bookingId);
-//                } catch (feign.FeignException.NotFound e) {
-//                    //TODO
-//                }
             }
         }
     }

@@ -2,13 +2,12 @@ package cz.cvut.fel.nss.tour.service;
 
 
 import cz.cvut.fel.nss.avro.BookingEvent;
-import cz.cvut.fel.nss.tour.Tour;
-import cz.cvut.fel.nss.tour.TourStatus;
-//import cz.cvut.fel.nss.tour.client.BookingClient;
+import cz.cvut.fel.nss.tour.entity.Tour;
+import cz.cvut.fel.nss.tour.entity.TourStatus;
 import cz.cvut.fel.nss.tour.dao.TourDao;
 import cz.cvut.fel.nss.tour.dto.TourDto;
 import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
-import cz.cvut.fel.nss.tour.exception.NotFoundException;
+import cz.cvut.fel.nss.exception.NotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -25,13 +24,11 @@ public class TourService {
 
     private final TourDao tourDao;
     private final TourMapper tourMapper;
-//    private final BookingClient bookingClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public TourService(TourDao tourDao, TourMapper tourMapper,  KafkaTemplate<String, Object> kafkaTemplate) {
         this.tourDao = tourDao;
         this.tourMapper = tourMapper;
-//        this.bookingClient = bookingClient;
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -85,6 +82,7 @@ public class TourService {
         tourDao.save(tour);
         return tour;
     }
+
     @Caching(evict = {
             @CacheEvict(value = "tours", key = "#tourId"),
             @CacheEvict(value = "toursByDate", allEntries = true)
@@ -97,9 +95,8 @@ public class TourService {
         tour.setStatus(TourStatus.CANCELLED);
         tourDao.update(tour);
         kafkaTemplate.send("tour-cancelled", new BookingEvent(0L, tourId, 0));
-//        bookingClient.cancelBookingsByTourId(tourId);
-
     }
+
     @Caching(evict = {
             @CacheEvict(value = "tours", key = "#tourId"),
             @CacheEvict(value = "toursByDate", allEntries = true)

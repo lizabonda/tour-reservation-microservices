@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.booking.dto.tour;
 
 
-import cz.cvut.fel.nss.booking.TourStatus;
+import cz.cvut.fel.nss.booking.entity.TourStatus;
 
 import java.time.LocalDate;
 

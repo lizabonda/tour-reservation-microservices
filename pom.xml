@@ -22,7 +22,7 @@
         <developer/>
     </developers>
     <modules>
-        <module>common-entity</module>
+        <module>common-lib</module>
         <module>user-service</module>
         <module>discovery-server</module>
         <module>booking-service</module>

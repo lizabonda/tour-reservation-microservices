@@ -1,7 +1,6 @@
 package cz.cvut.fel.nss.booking.controller;
 
-
-import cz.cvut.fel.nss.booking.Booking;
+import cz.cvut.fel.nss.booking.entity.Booking;
 import cz.cvut.fel.nss.booking.dto.booking.BookingDto;
 import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
@@ -41,7 +40,6 @@ class BookingController {
                 .body(response);
     }
 
-
     @GetMapping
     ResponseEntity<List<BookingDto>> getBookingsCreatedBetween(
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
@@ -50,20 +48,6 @@ class BookingController {
         List<BookingDto> bookings = bookingService.getBookingsCreatedBetween(from, to);
         return ResponseEntity.ok(bookings);
     }
-
-
-//    @PutMapping("/tour/cancel/{tourId}")
-//    ResponseEntity<Void> cancelBookingsByTourId(@PathVariable Long tourId) {
-//        bookingService.cancelBookingByTour(tourId);
-//        return ResponseEntity.noContent().build();
-//    }
-
-//    @DeleteMapping ("/{id}")
-//    // when we delete accomodation
-//    ResponseEntity<Void> removeBookingByIdInternally(@PathVariable Long id) {
-//        bookingService.removeBookingByIdBySystem(id);
-//        return ResponseEntity.noContent().build();
-//    }
 
     //when user delete booking
     @DeleteMapping("/user/{id}")

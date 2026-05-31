@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.accommodation.controller;
 
-import cz.cvut.fel.nss.accommodation.Reservation;
+import cz.cvut.fel.nss.accommodation.entity.Reservation;
 import cz.cvut.fel.nss.accommodation.dto.AccommodationPricingSummaryDto;
 import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.ReservationMapper;
@@ -35,10 +35,4 @@ public class ReservationController {
                 .map(reservationMapper::reservationToReservationDto)
                 .collect(Collectors.toList());
     }
-
-//    @DeleteMapping("/booking/cancel/{bookingId}")
-//    ResponseEntity<Void> cancelReservationsByBookingId(@PathVariable Long bookingId) {
-//        accommodationService.cancelReservationsByBookingId(bookingId);
-//        return ResponseEntity.noContent().build();
-//    }
 }

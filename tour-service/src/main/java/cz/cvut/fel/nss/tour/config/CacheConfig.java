@@ -5,7 +5,7 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.nio.serialization.compact.CompactSerializer;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
-import cz.cvut.fel.nss.tour.*;
+import cz.cvut.fel.nss.tour.entity.*;
 import org.springframework.cache.CacheManager;
 import java.time.LocalDate;
 import org.springframework.cache.annotation.EnableCaching;
