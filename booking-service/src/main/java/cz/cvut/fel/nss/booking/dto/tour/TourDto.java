@@ -1,6 +1,8 @@
 package cz.cvut.fel.nss.booking.dto.tour;
 
-import cz.cvut.fel.nss.entity.TourStatus;
+
+import cz.cvut.fel.nss.booking.TourStatus;
+
 import java.time.LocalDate;
 
 public record TourDto(Long id,

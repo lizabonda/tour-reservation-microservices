@@ -23,7 +23,9 @@ class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Booking access rules
                         .requestMatchers(HttpMethod.POST, "/api/bookings/**").hasRole("CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/api/bookings/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/bookings/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/bookings/user/**").hasRole("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET, "/api/bookings/user/**").hasRole("CUSTOMER")
                         .requestMatchers(HttpMethod.DELETE, "/api/bookings/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/bookings/**").hasRole("ADMIN")
 

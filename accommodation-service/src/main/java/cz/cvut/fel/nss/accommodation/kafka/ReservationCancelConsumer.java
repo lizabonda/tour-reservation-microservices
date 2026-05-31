@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.accommodation.kafka;
 
-import cz.cvut.fel.nss.accommodation.dto.BookingEvent;
+import cz.cvut.fel.nss.avro.BookingEvent;
 import cz.cvut.fel.nss.accommodation.service.AccommodationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class ReservationCancelConsumer {
 
     @KafkaListener(topics = "booking-cancelled")
     public void processReservationCancellation(BookingEvent event){
-        accommodationService.cancelReservationsByBookingId(event.bookingId());
+        accommodationService.cancelReservationsByBookingId(event.getBookingId());
 
     }
 }

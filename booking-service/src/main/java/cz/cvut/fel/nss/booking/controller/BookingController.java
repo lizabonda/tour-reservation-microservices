@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.booking.controller;
 
 
-import cz.cvut.fel.nss.entity.Booking;
+import cz.cvut.fel.nss.booking.Booking;
 import cz.cvut.fel.nss.booking.dto.booking.BookingDto;
 import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;

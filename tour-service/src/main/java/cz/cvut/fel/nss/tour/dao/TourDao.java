@@ -1,6 +1,7 @@
 package cz.cvut.fel.nss.tour.dao;
 
-import cz.cvut.fel.nss.entity.Tour;
+import cz.cvut.fel.nss.tour.Tour;
+import cz.cvut.fel.nss.tour.TourStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -54,9 +55,10 @@ public class TourDao implements  GenericDao<Tour> {
     @Override
     public List<Tour> findByDate(LocalDate startDate, LocalDate endDate) {
         return em.createQuery("SELECT t FROM Tour t WHERE t.startDate >= :startDate\n" +
-                        "                  AND t.endDate <= :endDate AND t.status = cz.cvut.fel.nss.entity.TourStatus.ACTIVE", Tour.class)
+                        "                  AND t.endDate <= :endDate AND t.status = :status", Tour.class)
                 .setParameter("startDate", startDate)
                 .setParameter("endDate", endDate)
+                .setParameter("status", TourStatus.ACTIVE)
                 .getResultList();
     }
 

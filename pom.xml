@@ -40,7 +40,16 @@
         <java.version>17</java.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <avro.version>1.11.3</avro.version>
+        <confluent.version>7.4.0</confluent.version>
+        <flyway.version>10.20.1</flyway.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -49,6 +58,16 @@
                 <version>${spring-cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
