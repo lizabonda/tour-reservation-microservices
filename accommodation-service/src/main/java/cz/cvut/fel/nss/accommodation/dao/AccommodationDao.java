@@ -43,6 +43,19 @@ public class AccommodationDao implements GenericDao<Accommodation> {
     }
 
     @Override
+    public void refresh(Accommodation entity) {
+        Objects.requireNonNull(entity);
+        if (em.contains(entity)) {
+            em.flush();
+            em.refresh(entity);
+        } else {
+            Accommodation managed = em.merge(entity);
+            em.flush();
+            em.refresh(managed);
+        }
+    }
+
+    @Override
     public void remove(Accommodation entity) {
         Objects.requireNonNull(entity);
         if (em.contains(entity)) {

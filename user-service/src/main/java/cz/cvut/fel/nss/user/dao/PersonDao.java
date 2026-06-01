@@ -48,6 +48,19 @@ public class PersonDao implements GenericDao<Person> {
     }
 
     @Override
+    public void refresh(Person entity) {
+        Objects.requireNonNull(entity);
+        if (em.contains(entity)) {
+            em.flush();
+            em.refresh(entity);
+        } else {
+            Person managed = em.merge(entity);
+            em.flush();
+            em.refresh(managed);
+        }
+    }
+
+    @Override
     public void remove(Person entity) {
         Objects.requireNonNull(entity);
         if (em.contains(entity)) {

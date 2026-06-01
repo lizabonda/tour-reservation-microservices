@@ -40,6 +40,19 @@ public class TourDao implements  GenericDao<Tour> {
     }
 
     @Override
+    public void refresh(Tour entity) {
+        Objects.requireNonNull(entity);
+        if (em.contains(entity)) {
+            em.flush();
+            em.refresh(entity);
+        } else {
+            Tour managed = em.merge(entity);
+            em.flush();
+            em.refresh(managed);
+        }
+    }
+
+    @Override
     public void remove(Tour entity) {
         Objects.requireNonNull(entity);
         if (em.contains(entity)) {

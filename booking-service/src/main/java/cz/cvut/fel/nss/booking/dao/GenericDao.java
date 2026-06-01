@@ -23,6 +23,8 @@ public interface GenericDao<T> {
 
     T update(T entity);
 
+    void refresh(T entity);
+
     void remove(T entity);
 
     default boolean exists(Long id) {
