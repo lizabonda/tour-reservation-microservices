@@ -39,6 +39,19 @@ public class ReservationDao implements GenericDao<Reservation> {
     }
 
     @Override
+    public void refresh(Reservation entity) {
+        Objects.requireNonNull(entity);
+        if (em.contains(entity)) {
+            em.flush();
+            em.refresh(entity);
+        } else {
+            Reservation managed = em.merge(entity);
+            em.flush();
+            em.refresh(managed);
+        }
+    }
+
+    @Override
     public void remove(Reservation entity) {
         Objects.requireNonNull(entity);
         if (em.contains(entity)) {

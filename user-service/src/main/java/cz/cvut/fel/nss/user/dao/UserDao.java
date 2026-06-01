@@ -38,6 +38,19 @@ public class UserDao implements GenericDao<User> {
     }
 
     @Override
+    public void refresh(User entity) {
+        Objects.requireNonNull(entity);
+        if (em.contains(entity)) {
+            em.flush();
+            em.refresh(entity);
+        } else {
+            User managed = em.merge(entity);
+            em.flush();
+            em.refresh(managed);
+        }
+    }
+
+    @Override
     public void remove(User entity) {
         Objects.requireNonNull(entity);
         if (em.contains(entity)) {

@@ -1,4 +1,31 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: postgres
+    volumes:
+      - ./database/init-db.sql:/docker-entrypoint-initdb.d/01-init-db.sql
+    #   - ./database/accommodation-service-init.sql:/docker-entrypoint-initdb.d/02-accommodation.sql
+    #   - ./database/booking-service-init.sql:/docker-entrypoint-initdb.d/03-booking.sql
+    #   - ./database/tour-service-init.sql:/docker-entrypoint-initdb.d/04-tour.sql
+    #   - ./database/user-service-init.sql:/docker-entrypoint-initdb.d/05-user.sql
+
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: pgadmin
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+#      PGADMIN_DEFAULT_PASSWORD: admin
+#    ports:
+#      - "8085:80"
+#    depends_on:
+#      - postgres
+
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     container_name: kafka

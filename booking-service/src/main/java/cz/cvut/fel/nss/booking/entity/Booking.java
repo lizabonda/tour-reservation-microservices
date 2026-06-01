@@ -16,7 +16,7 @@ public class Booking {
     @SequenceGenerator(name = "booking_seq", sequenceName = "booking_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "booking_number")
+    @Column(name = "booking_number", insertable = false, updatable = false)
     private int bookingNumber;
     private double totalPrice;
 
