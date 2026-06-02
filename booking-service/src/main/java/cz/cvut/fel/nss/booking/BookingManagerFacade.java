@@ -1,4 +1,4 @@
-package cz.cvut.fel.nss.booking.facade;
+package cz.cvut.fel.nss.booking;
 
 import cz.cvut.fel.nss.booking.entity.TourStatus;
 import cz.cvut.fel.nss.booking.service.BookingPricingService;

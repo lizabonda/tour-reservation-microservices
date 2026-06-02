@@ -8,7 +8,7 @@ import cz.cvut.fel.nss.booking.dto.booking.BookingReservationDTO;
 import cz.cvut.fel.nss.booking.dto.booking.CreateBookingDTO;
 import cz.cvut.fel.nss.booking.dto.mapper.BookingMapper;
 import cz.cvut.fel.nss.exception.NotFoundException;
-import cz.cvut.fel.nss.booking.facade.BookingManagerFacade;
+import cz.cvut.fel.nss.booking.BookingManagerFacade;
 import cz.cvut.fel.nss.booking.status.BookingStateFactory;
 import cz.cvut.fel.nss.booking.entity.Booking;
 import cz.cvut.fel.nss.booking.entity.BookingStatus;
