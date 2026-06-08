@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.accommodation.service;
 
 import cz.cvut.fel.nss.accommodation.facade.AccommodationDaoFacade;
-import cz.cvut.fel.nss.avro.BookingEvent;
+import cz.cvut.fel.nss.accommodation.kafka.AccommodationEventPublisher;
 import cz.cvut.fel.nss.accommodation.entity.Accommodation;
 import cz.cvut.fel.nss.accommodation.entity.MealPlan;
 import cz.cvut.fel.nss.accommodation.entity.Reservation;
@@ -11,7 +11,6 @@ import cz.cvut.fel.nss.accommodation.dto.ReservationDto;
 import cz.cvut.fel.nss.accommodation.dto.mapper.AccommodationMapper;
 import cz.cvut.fel.nss.accommodation.dto.mapper.ReservationMapper;
 import cz.cvut.fel.nss.accommodation.entity.ReservationStatus;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +27,13 @@ public class AccommodationService {
     private final AccommodationDaoFacade accommodationDaoFacade;
     private final AccommodationMapper accommodationMapper;
     private final ReservationMapper reservationMapper;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final AccommodationEventPublisher accommodationEventPublisher;
 
-    public AccommodationService(AccommodationDaoFacade accommodationDaoFacade, AccommodationMapper accommodationMapper, ReservationMapper reservationMapper, KafkaTemplate<String, Object> kafkaTemplate) {
+    public AccommodationService(AccommodationDaoFacade accommodationDaoFacade, AccommodationMapper accommodationMapper, ReservationMapper reservationMapper, AccommodationEventPublisher accommodationEventPublisher) {
         this.accommodationDaoFacade = accommodationDaoFacade;
         this.accommodationMapper = accommodationMapper;
         this.reservationMapper = reservationMapper;
-        this.kafkaTemplate = kafkaTemplate;
+        this.accommodationEventPublisher = accommodationEventPublisher;
     }
 
     public AccommodationPricingSummaryDto calculatePrice(List<ReservationDto> reservationsDto) {
@@ -168,9 +167,7 @@ public class AccommodationService {
         }
 
         for (Long bookingId : reservationBookingIds) {
-            if (bookingId != null) {
-                kafkaTemplate.send("accommodation-cancel", new BookingEvent(bookingId, 0L, 0));
-            }
+            accommodationEventPublisher.publishAccommodationCancelled(bookingId);
         }
     }
 

@@ -1,7 +1,7 @@
 package cz.cvut.fel.nss.tour.service;
 
 
-import cz.cvut.fel.nss.avro.BookingEvent;
+import cz.cvut.fel.nss.tour.kafka.TourEventPublisher;
 import cz.cvut.fel.nss.tour.entity.Tour;
 import cz.cvut.fel.nss.tour.entity.TourStatus;
 import cz.cvut.fel.nss.tour.dao.TourDao;
@@ -10,7 +10,6 @@ import cz.cvut.fel.nss.tour.dto.mapper.TourMapper;
 import cz.cvut.fel.nss.exception.NotFoundException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,12 +23,12 @@ public class TourService {
 
     private final TourDao tourDao;
     private final TourMapper tourMapper;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final TourEventPublisher tourEventPublisher;
 
-    public TourService(TourDao tourDao, TourMapper tourMapper,  KafkaTemplate<String, Object> kafkaTemplate) {
+    public TourService(TourDao tourDao, TourMapper tourMapper, TourEventPublisher tourEventPublisher) {
         this.tourDao = tourDao;
         this.tourMapper = tourMapper;
-        this.kafkaTemplate = kafkaTemplate;
+        this.tourEventPublisher = tourEventPublisher;
     }
 
     @Cacheable(value = "tours", key = "#id")
@@ -94,7 +93,7 @@ public class TourService {
         }
         tour.setStatus(TourStatus.CANCELLED);
         tourDao.update(tour);
-        kafkaTemplate.send("tour-cancelled", new BookingEvent(0L, tourId, 0));
+        tourEventPublisher.publishTourCancelled(tourId);
     }
 
     @Caching(evict = {
