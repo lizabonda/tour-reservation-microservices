@@ -69,6 +69,24 @@ public class Reservation {
         this.endDate = endDate;
     }
 
+    public void validate() {
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Reservation must have startDate and endDate");
+        }
+        if (!endDate.isAfter(startDate)) {
+            throw new IllegalArgumentException("Reservation endDate must be after startDate");
+        }
+        if (accommodation == null) {
+            throw new IllegalArgumentException("Reservation must have accommodation");
+        }
+        if (numberOfPersons <= 0) {
+            throw new IllegalArgumentException("Number of persons must be positive");
+        }
+        if (numberOfPersons > accommodation.getCapacity()) {
+            throw new IllegalStateException("Too many persons for this accommodation");
+        }
+    }
+
     public double getReservationPrice() {
         return reservationPrice;
     }

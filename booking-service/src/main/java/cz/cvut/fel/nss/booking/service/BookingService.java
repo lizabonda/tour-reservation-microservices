@@ -139,18 +139,12 @@ public class BookingService {
     }
 
     public List<BookingDto> getBookingsCreatedBetween(LocalDate fromDate, LocalDate toDate) {
-        if (fromDate == null || toDate == null) {
+        if (fromDate == null || toDate == null || fromDate.isAfter(toDate)) {
             throw new IllegalArgumentException("Invalid date range");
         }
-        if (fromDate.isAfter(toDate)) {
-            throw new IllegalArgumentException("Invalid date range");
-        }
-        List<Booking> bookings = bookingDao.findBookingsCreatedBetween(fromDate, toDate);
-        List<BookingDto> bookingDtos = new ArrayList<>();
-        for (Booking booking : bookings) {
-            bookingDtos.add(bookingMapper.bookingToBookingDto(booking));
-        }
-        return bookingDtos;
+        return bookingDao.findBookingsCreatedBetween(fromDate, toDate).stream()
+                .map(bookingMapper::bookingToBookingDto)
+                .toList();
     }
 
 
