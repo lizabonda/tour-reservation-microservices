@@ -1,6 +1,6 @@
 package cz.cvut.fel.nss.booking.service;
 
-import cz.cvut.fel.nss.avro.BookingEvent;
+import cz.cvut.fel.nss.booking.kafka.BookingEventPublisher;
 import cz.cvut.fel.nss.booking.dao.BookingDao;
 import cz.cvut.fel.nss.booking.dto.booking.BookingDto;
 import cz.cvut.fel.nss.booking.dto.booking.BookingPersonDTO;
@@ -14,12 +14,10 @@ import cz.cvut.fel.nss.booking.entity.Booking;
 import cz.cvut.fel.nss.booking.entity.BookingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,16 +31,16 @@ public class BookingService {
 
     private final BookingDao bookingDao;
     private final BookingMapper bookingMapper;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final BookingEventPublisher bookingEventPublisher;
     private final BookingManagerFacade bookingManagerFacade;
 
     public BookingService(BookingDao bookingDao,
                           BookingMapper bookingMapper,
-                          KafkaTemplate<String, Object> kafkaTemplate,
+                          BookingEventPublisher bookingEventPublisher,
                           BookingManagerFacade bookingManagerFacade) {
         this.bookingDao = bookingDao;
         this.bookingMapper = bookingMapper;
-        this.kafkaTemplate = kafkaTemplate;
+        this.bookingEventPublisher = bookingEventPublisher;
         this.bookingManagerFacade = bookingManagerFacade;
     }
 
@@ -65,12 +63,11 @@ public class BookingService {
         bookingDao.refresh(managedBooking);
 
         // 4. Last step - notify Kafka about tour capacity change
-        BookingEvent event = BookingEvent.newBuilder()
-                .setBookingId(managedBooking.getId())
-                .setTourId(managedBooking.getTourId())
-                .setPersonsCount(-managedBooking.getPersonIds().size())
-                .build();
-        kafkaTemplate.send("tour-capacity", event);
+        bookingEventPublisher.publishTourCapacityChanged(
+                managedBooking.getId(),
+                managedBooking.getTourId(),
+                -managedBooking.getPersonIds().size()
+        );
         log.info("Booking created with id: {}, total price: {}", managedBooking.getId(), managedBooking.getTotalPrice());
 
         return bookingDao.find(managedBooking.getId());
@@ -151,24 +148,18 @@ public class BookingService {
     public void cancelBookingByTour(Long tourId) {
 
         List<Booking> bookings = bookingDao.findAllByTour(tourId);
-        List<BookingEvent> events = new ArrayList<>();
 
         for (Booking booking : bookings) {
             if (booking.getStatus() != BookingStatus.CANCELLED) {
-                BookingEvent event = BookingEvent.newBuilder()
-                        .setBookingId(booking.getId())
-                        .setTourId(tourId)
-                        .setPersonsCount(booking.getPersonIds().size())
-                        .build();
-                events.add(event);
+                bookingEventPublisher.publishBookingCancelled(
+                        booking.getId(),
+                        tourId,
+                        booking.getPersonIds().size()
+                );
 
                 BookingStateFactory.getState(booking.getStatus()).cancel(booking);
                 bookingDao.update(booking);
             }
-        }
-
-        for (BookingEvent event : events) {
-            kafkaTemplate.send("booking-cancelled", event);
         }
     }
 
@@ -189,12 +180,11 @@ public class BookingService {
         }
         BookingStateFactory.getState(booking.getStatus()).cancel(booking);
         bookingDao.update(booking);
-        BookingEvent event = BookingEvent.newBuilder()
-                .setBookingId(booking.getId())
-                .setTourId(booking.getTourId())
-                .setPersonsCount(booking.getPersonIds().size())
-                .build();
-        kafkaTemplate.send("tour-capacity", event);
+        bookingEventPublisher.publishTourCapacityChanged(
+                booking.getId(),
+                booking.getTourId(),
+                booking.getPersonIds().size()
+        );
     }
 
     public void cancelBookingByUser(Long id) {
@@ -208,13 +198,8 @@ public class BookingService {
         BookingStateFactory.getState(booking.getStatus()).cancel(booking);
         bookingDao.update(booking);
         int personsCount = booking.getPersonIds().size();
-        BookingEvent event = BookingEvent.newBuilder()
-                .setBookingId(booking.getId())
-                .setTourId(booking.getTourId())
-                .setPersonsCount(personsCount)
-                .build();
-        kafkaTemplate.send("booking-cancelled", event);
-        kafkaTemplate.send("tour-capacity", event);
+        bookingEventPublisher.publishBookingCancelled(booking.getId(), booking.getTourId(), personsCount);
+        bookingEventPublisher.publishTourCapacityChanged(booking.getId(), booking.getTourId(), personsCount);
     }
 }
 
