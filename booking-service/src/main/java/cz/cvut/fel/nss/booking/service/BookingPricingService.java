@@ -7,6 +7,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/**
+ * Calculates booking prices and applies the first matching discount strategy.
+ */
 @Service
 public class BookingPricingService {
 
@@ -16,11 +19,29 @@ public class BookingPricingService {
         this.discountStrategies = discountStrategies;
     }
 
+    /**
+     * Calculates a discount for the given booking date and tour start date.
+     *
+     * @param createdAt date when the booking is created
+     * @param tourStartDate date when the tour starts
+     * @param basePrice price before discounts and extra charges
+     * @return discount amount
+     */
     public double discount(LocalDate createdAt, LocalDate tourStartDate, double basePrice) {
         DiscountStrategy strategy = resolveStrategy(createdAt, tourStartDate);
         return strategy.calculateDiscount(basePrice);
     }
 
+    /**
+     * Calculates the final booking price.
+     *
+     * @param createdAt date when the booking is created
+     * @param tourStartDate date when the tour starts
+     * @param tourPrice total tour price for all participants
+     * @param accommodationPrice total accommodation price
+     * @param allInclusiveCharge additional meal-plan charge
+     * @return final price after discount and extra charges
+     */
     public double totalPrice(LocalDate createdAt,
                              LocalDate tourStartDate,
                              double tourPrice,
@@ -32,6 +53,17 @@ public class BookingPricingService {
         return basePrice - discount + allInclusiveCharge;
     }
 
+    /**
+     * Builds a human-readable explanation of the price calculation.
+     *
+     * @param bookingId booking id used in the report
+     * @param createdAt date when the booking is created
+     * @param tourStartDate date when the tour starts
+     * @param tourPrice total tour price
+     * @param accommodationPrice total accommodation price
+     * @param allInclusiveCharge additional meal-plan charge
+     * @return formatted price calculation report
+     */
     public String priceReport(Long bookingId,
                               LocalDate createdAt,
                               LocalDate tourStartDate,

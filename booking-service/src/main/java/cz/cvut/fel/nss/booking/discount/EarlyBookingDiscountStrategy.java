@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+/**
+ * Applies a discount when the booking is created sufficiently early before the tour.
+ */
 @Component
 @Order(1)
 public class EarlyBookingDiscountStrategy implements DiscountStrategy {

@@ -6,7 +6,7 @@
     <parent>
         <groupId>cz.cvut.fel.ear</groupId>
         <artifactId>Projekt</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <groupId>cz.cvut.fel.nss</groupId>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>cz.cvut.fel.ear</groupId>
             <artifactId>common-lib</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>cz.cvut.fel.nss</groupId>
             <artifactId>common-entity</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
 
         <dependency>

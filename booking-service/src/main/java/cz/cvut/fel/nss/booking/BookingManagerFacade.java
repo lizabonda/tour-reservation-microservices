@@ -18,6 +18,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Coordinates calls to external services that are needed while creating a booking.
+ * The facade keeps integration details out of {@link cz.cvut.fel.nss.booking.service.BookingService}
+ * and prepares booking data before it is persisted.
+ */
 @Component
 public class BookingManagerFacade {
 
@@ -35,6 +40,12 @@ public class BookingManagerFacade {
         this.bookingPricingService = bookingPricingService;
     }
 
+    /**
+     * Validates the selected tour, resolves persons and calculates the initial booking price.
+     *
+     * @param dto booking creation request from the API layer
+     * @return booking entity populated with tour, persons and total price
+     */
     public Booking initializeBooking(CreateBookingDTO dto) {
         // 1. Tour validation
         final TourDto tour = tourClient.getTour(dto.tourId());
@@ -84,6 +95,13 @@ public class BookingManagerFacade {
         return booking;
     }
 
+    /**
+     * Creates accommodation reservations after the booking has an id.
+     *
+     * @param booking persisted booking entity
+     * @param dto original booking creation request
+     * @throws IllegalStateException when accommodation reservations cannot be created
+     */
     public void finalizeBooking(Booking booking, CreateBookingDTO dto) {
         int requestedSize = booking.getPersonIds().size();
         List<ReservationDto> resDtoInput = dto.reservations().stream()
