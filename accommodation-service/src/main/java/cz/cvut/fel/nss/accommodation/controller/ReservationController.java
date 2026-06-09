@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * REST controller for reservation price calculation and reservation creation.
+ */
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -23,11 +26,24 @@ public class ReservationController {
     }
 
 
+    /**
+     * Calculates accommodation price for reservation requests.
+     *
+     * @param reservationsDto reservation requests
+     * @return calculated price summary
+     */
     @PostMapping("/calculate-price")
     public AccommodationPricingSummaryDto calculatePrice(@RequestBody List<ReservationDto> reservationsDto) {
         return accommodationService.calculatePrice(reservationsDto);
     }
 
+    /**
+     * Creates reservations for an existing booking.
+     *
+     * @param reservationsDto reservation requests
+     * @param bookingId owner booking id
+     * @return created reservations as DTOs
+     */
     @PostMapping
     public List<ReservationDto> createReservations(@RequestBody List<ReservationDto> reservationsDto, @RequestParam Long bookingId) {
         List<Reservation> reservations = accommodationService.createReservations(reservationsDto, bookingId);

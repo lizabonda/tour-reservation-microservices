@@ -18,6 +18,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Provides accommodation business operations used by the booking flow.
+ * The service calculates reservation prices, creates reservations and
+ * propagates accommodation cancellations to the rest of the system.
+ */
 @Service
 @Transactional
 public class AccommodationService {
@@ -36,6 +41,13 @@ public class AccommodationService {
         this.accommodationEventPublisher = accommodationEventPublisher;
     }
 
+    /**
+     * Calculates the accommodation price for the requested reservations.
+     *
+     * @param reservationsDto reservation requests with accommodation ids and date ranges
+     * @return summary containing the calculated accommodation price
+     * @throws IllegalArgumentException when a reservation request is missing required data
+     */
     public AccommodationPricingSummaryDto calculatePrice(List<ReservationDto> reservationsDto) {
         if (reservationsDto == null || reservationsDto.isEmpty()) {
             throw new IllegalArgumentException("Reservations must not be empty");
@@ -73,6 +85,15 @@ public class AccommodationService {
     }
 
 
+    /**
+     * Creates reservations for an already persisted booking.
+     *
+     * @param reservationsDto reservation requests to create
+     * @param bookingId id of the booking that owns the reservations
+     * @return persisted reservation entities
+     * @throws IllegalArgumentException when input data is incomplete or contains forbidden ids
+     * @throws IllegalStateException when the accommodation is not available for the requested dates
+     */
     public List<Reservation> createReservations(List<ReservationDto> reservationsDto, Long bookingId) {
         if (reservationsDto == null || reservationsDto.isEmpty()) {
             throw new IllegalArgumentException("Reservations must not be empty");
@@ -123,6 +144,13 @@ public class AccommodationService {
         }).toList();
     }
 
+    /**
+     * Moves a reservation to a different accommodation and recalculates its price.
+     *
+     * @param reservationId id of the reservation to update
+     * @param newaccommodationId id of the new accommodation
+     * @throws IllegalStateException when the new accommodation is not available
+     */
     public void updateBookingAccommodation(Long reservationId, Long newaccommodationId) {
         if (newaccommodationId == null) {
             throw new IllegalArgumentException("New accommodation id must not be null");
@@ -143,12 +171,23 @@ public class AccommodationService {
         accommodationDaoFacade.updateReservation(r);
     }
 
+    /**
+     * Creates a new accommodation from API data.
+     *
+     * @param accommodationDto accommodation data
+     * @return persisted accommodation entity
+     */
     public Accommodation createAccommodation(AccommodationDto accommodationDto) {
         Accommodation accommodation = accommodationMapper.accommodationDtoToAccommodation(accommodationDto);
         accommodationDaoFacade.saveAccommodation(accommodation);
         return accommodation;
     }
 
+    /**
+     * Soft-deletes accommodation and cancels active reservations connected to it.
+     *
+     * @param id accommodation id
+     */
     public void deleteAccommodation(Long id) {
         Accommodation accommodation = accommodationDaoFacade.findAccommodationById(id);
         accommodation.setDeleted(true);
@@ -171,6 +210,11 @@ public class AccommodationService {
         }
     }
 
+    /**
+     * Cancels all active reservations belonging to a booking.
+     *
+     * @param bookingId id of the booking whose reservations should be cancelled
+     */
     public void cancelReservationsByBookingId(Long bookingId) {
         accommodationDaoFacade.findAllReservationsByBookingId(bookingId).stream()
                 .filter(res -> res.getStatus() != ReservationStatus.CANCELLED)

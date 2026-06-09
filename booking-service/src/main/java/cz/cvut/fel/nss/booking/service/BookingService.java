@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
+/**
+ * Handles booking lifecycle operations such as creation, lookup and cancellation.
+ * The service owns booking persistence and publishes booking-related domain events.
+ */
 @Service
 @Transactional
 public class BookingService {
@@ -44,6 +47,12 @@ public class BookingService {
         this.bookingManagerFacade = bookingManagerFacade;
     }
 
+    /**
+     * Creates a booking from client input and updates dependent services.
+     *
+     * @param dto booking creation request
+     * @return persisted booking with generated identifiers and calculated price
+     */
     public Booking createBookingFromDto(CreateBookingDTO dto) {
         validateCreateBookingDto(dto);
 
@@ -126,6 +135,13 @@ public class BookingService {
         }
     }
 
+    /**
+     * Finds a booking by its id.
+     *
+     * @param id booking id
+     * @return booking entity
+     * @throws NotFoundException when the booking does not exist
+     */
     public Booking findById(Long id) {
         Objects.requireNonNull(id);
         final Booking booking = bookingDao.find(id);
@@ -135,6 +151,13 @@ public class BookingService {
         return booking;
     }
 
+    /**
+     * Returns bookings created inside an inclusive date range.
+     *
+     * @param fromDate start of the creation date range
+     * @param toDate end of the creation date range
+     * @return booking DTOs created in the given period
+     */
     public List<BookingDto> getBookingsCreatedBetween(LocalDate fromDate, LocalDate toDate) {
         if (fromDate == null || toDate == null || fromDate.isAfter(toDate)) {
             throw new IllegalArgumentException("Invalid date range");
@@ -145,6 +168,11 @@ public class BookingService {
     }
 
 
+    /**
+     * Cancels all active bookings for a cancelled tour.
+     *
+     * @param tourId id of the tour whose bookings should be cancelled
+     */
     public void cancelBookingByTour(Long tourId) {
 
         List<Booking> bookings = bookingDao.findAllByTour(tourId);
@@ -164,12 +192,23 @@ public class BookingService {
     }
 
 
+    /**
+     * Finds bookings that contain a given user/person id.
+     *
+     * @param userId user/person id
+     * @return matching booking DTOs
+     */
     public List<BookingDto> findByUser(Long userId) {
         List<Booking> bookings = bookingDao.findByUser(userId);
         return bookings.stream().map(b -> bookingMapper.bookingToBookingDto(b)).collect(Collectors.toList());
 
     }
     // when we delete accommodation
+    /**
+     * Cancels a booking as a system action and restores tour capacity.
+     *
+     * @param id booking id
+     */
     public void removeBookingByIdBySystem (Long id) {
         Booking booking = bookingDao.find(id);
         if (booking == null) {
@@ -187,6 +226,11 @@ public class BookingService {
         );
     }
 
+    /**
+     * Cancels a booking requested by the user and notifies dependent services.
+     *
+     * @param id booking id
+     */
     public void cancelBookingByUser(Long id) {
         Booking booking = bookingDao.find(id);
         if (booking == null) {
