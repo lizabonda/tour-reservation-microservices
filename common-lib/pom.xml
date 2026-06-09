@@ -6,11 +6,11 @@
     <parent>
         <groupId>cz.cvut.fel.ear</groupId>
         <artifactId>Projekt</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>common-lib</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>common-lib</name>
 
     <dependencies>

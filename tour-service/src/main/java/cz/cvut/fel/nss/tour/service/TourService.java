@@ -17,10 +17,6 @@ import org.springframework.cache.annotation.Cacheable;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Provides tour lookup and lifecycle operations.
- * The service also keeps cached tour data consistent after mutations.
- */
 @Service
 @Transactional
 public class TourService {
@@ -35,25 +31,12 @@ public class TourService {
         this.tourEventPublisher = tourEventPublisher;
     }
 
-    /**
-     * Finds a tour by id.
-     *
-     * @param id tour id
-     * @return tour entity or {@code null} when it does not exist
-     */
     @Cacheable(value = "tours", key = "#id")
     public Tour findById(Long id) {
         System.out.println("Loading tour from DB, id = " + id);
         return tourDao.find(id);
     }
 
-    /**
-     * Finds tours whose dates intersect the requested range.
-     *
-     * @param startDate start of the requested date range
-     * @param endDate end of the requested date range
-     * @return tours matching the date range
-     */
     @Cacheable(value = "toursByDate", key = "#startDate + ':' + #endDate")
     public List<Tour> findByDate(LocalDate startDate, LocalDate endDate) {
         System.out.println("Loading tours from DB, startDate = " + startDate + ", endDate = " + endDate);
@@ -66,12 +49,6 @@ public class TourService {
         return tourDao.findByDate(startDate,endDate);
     }
 
-    /**
-     * Creates a new active tour.
-     *
-     * @param tourDto tour data from the API layer
-     * @return persisted tour entity
-     */
     @CacheEvict(value = "toursByDate", allEntries = true)
     public Tour createTour(TourDto tourDto) {
         if (tourDto == null) {
@@ -105,11 +82,6 @@ public class TourService {
         return tour;
     }
 
-    /**
-     * Cancels a tour and publishes a cancellation event for dependent bookings.
-     *
-     * @param tourId tour id
-     */
     @Caching(evict = {
             @CacheEvict(value = "tours", key = "#tourId"),
             @CacheEvict(value = "toursByDate", allEntries = true)
@@ -124,12 +96,6 @@ public class TourService {
         tourEventPublisher.publishTourCancelled(tourId);
     }
 
-    /**
-     * Updates remaining tour capacity after booking creation or cancellation.
-     *
-     * @param tourId tour id
-     * @param change positive or negative capacity change
-     */
     @Caching(evict = {
             @CacheEvict(value = "tours", key = "#tourId"),
             @CacheEvict(value = "toursByDate", allEntries = true)

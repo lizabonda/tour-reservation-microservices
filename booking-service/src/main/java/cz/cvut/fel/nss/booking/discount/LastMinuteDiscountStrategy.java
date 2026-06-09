@@ -6,9 +6,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Applies a discount when the booking is created shortly before the tour starts.
- */
 @Component
 @Order(1)
 public class LastMinuteDiscountStrategy implements DiscountStrategy {

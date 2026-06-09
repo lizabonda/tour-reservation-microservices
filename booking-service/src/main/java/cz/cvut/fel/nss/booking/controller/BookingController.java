@@ -13,9 +13,6 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * REST controller exposing booking creation, lookup and cancellation endpoints.
- */
 @RestController
 @RequestMapping("/api/bookings")
 class BookingController {
@@ -28,24 +25,12 @@ class BookingController {
         this.bookingMapper = bookingMapper;
     }
 
-    /**
-     * Returns a booking by id.
-     *
-     * @param id booking id
-     * @return booking response
-     */
     @GetMapping("/{id}")
     ResponseEntity<BookingDto> getById(@PathVariable Long id) {
         Booking booking = bookingService.findById(id);
         return ResponseEntity.ok(bookingMapper.bookingToBookingDto(booking));
     }
 
-    /**
-     * Creates a new booking.
-     *
-     * @param request booking creation payload
-     * @return created booking response
-     */
     @PostMapping
     ResponseEntity<BookingDto> create(@RequestBody CreateBookingDTO request) {
         Booking created = bookingService.createBookingFromDto(request);
@@ -55,13 +40,6 @@ class BookingController {
                 .body(response);
     }
 
-    /**
-     * Returns bookings created in the given date range.
-     *
-     * @param from start date
-     * @param to end date
-     * @return matching bookings
-     */
     @GetMapping
     ResponseEntity<List<BookingDto>> getBookingsCreatedBetween(
             @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
@@ -71,24 +49,13 @@ class BookingController {
         return ResponseEntity.ok(bookings);
     }
 
-    /**
-     * Cancels a booking by user request.
-     *
-     * @param id booking id
-     * @return empty response
-     */
+    //when user delete booking
     @DeleteMapping("/user/{id}")
     ResponseEntity<Void> cancelBookingByUser(@PathVariable("id") Long id) {
         bookingService.cancelBookingByUser(id);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Returns bookings connected to a user/person.
-     *
-     * @param userId user/person id
-     * @return matching bookings
-     */
     @GetMapping("/user/{userId}")
     ResponseEntity<List<BookingDto>> getBookingsByUser(@PathVariable Long userId) {
         List<BookingDto> bookings = bookingService.findByUser(userId);

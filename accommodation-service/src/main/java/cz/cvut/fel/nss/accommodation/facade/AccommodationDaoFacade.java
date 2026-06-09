@@ -10,10 +10,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Facade over accommodation and reservation DAOs.
- * It centralizes common lookup and availability checks used by the service layer.
- */
 @Component
 public class AccommodationDaoFacade {
 
@@ -25,12 +21,6 @@ public class AccommodationDaoFacade {
         this.reservationDao = reservationDao;
     }
 
-    /**
-     * Finds an accommodation or fails when it does not exist.
-     *
-     * @param id accommodation id
-     * @return accommodation entity
-     */
     public Accommodation findAccommodationById(Long id) {
         Accommodation accommodation = accommodationDao.find(id);
         if (accommodation == null) {
@@ -39,12 +29,6 @@ public class AccommodationDaoFacade {
         return accommodation;
     }
 
-    /**
-     * Finds a reservation or fails when it does not exist.
-     *
-     * @param id reservation id
-     * @return reservation entity
-     */
     public Reservation findReservationById(Long id) {
         Reservation reservation = reservationDao.find(id);
         if (reservation == null) {
@@ -77,15 +61,6 @@ public class AccommodationDaoFacade {
         return reservationDao.findAllByBookingId(bookingId);
     }
 
-    /**
-     * Checks whether an accommodation has another reservation in the given date range.
-     *
-     * @param accommodationId accommodation id
-     * @param startDate reservation start date
-     * @param endDate reservation end date
-     * @param excludeReservationId reservation id that should be ignored during update checks
-     * @return {@code true} when the requested period conflicts with an existing reservation
-     */
     public boolean hasIntersection(Long accommodationId, LocalDate startDate, LocalDate endDate, Long excludeReservationId) {
         List<Reservation> intersections = reservationDao.findIntersection(accommodationId, startDate, endDate);
         if (excludeReservationId == null) {

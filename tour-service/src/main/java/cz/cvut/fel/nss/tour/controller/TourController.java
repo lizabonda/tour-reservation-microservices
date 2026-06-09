@@ -12,9 +12,6 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * REST controller exposing tour lookup, creation and cancellation endpoints.
- */
 @RestController
 @RequestMapping("/tours")
 public class TourController {
@@ -27,12 +24,6 @@ public class TourController {
         this.tourMapper = tourMapper;
     }
 
-    /**
-     * Returns a tour by id.
-     *
-     * @param id tour id
-     * @return tour DTO
-     */
     @GetMapping("/{id}")
     public TourDto getTour(@PathVariable Long id) {
         Tour tour = tourService.findById(id);
@@ -42,25 +33,12 @@ public class TourController {
         return tourMapper.tourToTourDto(tour);
     }
 
-    /**
-     * Returns tours matching the requested date range.
-     *
-     * @param startDate start date
-     * @param endDate end date
-     * @return matching tours
-     */
     @GetMapping("/date")
     public List<TourDto> getToursByDate(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
         List<Tour> tours= tourService.findByDate(startDate,endDate);
         return tours.stream().map(tour -> tourMapper.tourToTourDto(tour)).toList();
     }
 
-    /**
-     * Creates a new tour.
-     *
-     * @param tourDto tour creation payload
-     * @return created tour response
-     */
     @PostMapping
     ResponseEntity <TourDto> createTour (@RequestBody TourDto tourDto) {
         Tour created = tourService.createTour(tourDto);
@@ -70,12 +48,6 @@ public class TourController {
                 .body(response);
     }
 
-    /**
-     * Cancels a tour by id.
-     *
-     * @param id tour id
-     * @return empty response
-     */
     @DeleteMapping("/{id}")
     ResponseEntity<Void> cancelTour(@PathVariable Long id) {
         tourService.cancelTour(id);

@@ -12,9 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Provides person lookup and creation operations for booking participants.
- */
 @Service
 @Transactional
 public class UserService {
@@ -27,12 +24,9 @@ public class UserService {
         this.personMapper = personMapper;
     }
 
-    /**
-     * Resolves existing persons by id or creates them from personal details.
-     *
-     * @param personsDto person requests from the booking service
-     * @return resolved or newly created persons
-     */
+    // We support 2 modes:
+    // 1) person.id is set -> use existing Person
+    // 2) person.id = null -> create new Person using (firstName, lastName, dateOfBirth)
     public List<Person> foundOrCreatePersons(List<PersonDto> personsDto) {
         final List<Person> persons = new ArrayList<>(personsDto.size());
         if (personsDto == null || personsDto.isEmpty()) {
