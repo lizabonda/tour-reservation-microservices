@@ -16,7 +16,7 @@ public class Accommodation {
             allocationSize = 1
     )
     private Long id;
-    @org.jetbrains.annotations.NotNull
+    @NotNull
     @Column(nullable = false)
     private String name;
     @NotNull

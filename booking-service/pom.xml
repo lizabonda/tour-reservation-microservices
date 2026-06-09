@@ -95,11 +95,6 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>cz.cvut.fel.nss</groupId>
-            <artifactId>common-entity</artifactId>
-            <version>0.0.1</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.avro</groupId>

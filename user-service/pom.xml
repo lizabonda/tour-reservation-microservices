@@ -80,11 +80,6 @@
             <scope>test</scope>
         </dependency>
 
-    <dependency>
-        <groupId>cz.cvut.fel.nss</groupId>
-        <artifactId>common-entity</artifactId>
-        <version>0.0.1</version>
-    </dependency>
     </dependencies>
 
     <build>
