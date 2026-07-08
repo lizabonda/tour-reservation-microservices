@@ -27,10 +27,10 @@ Before starting the microservices, you need to start the infrastructure. The pro
    ```
 
 This will start:
-* **PostgreSQL**: available on port
-* **Kafka**: broker available on port
-* **Schema Registry**: available on port
-* **AKHQ**: GUI for managing Kafka
+* **PostgreSQL**: available on port 5433
+* **Kafka**: broker available on port 9092
+* **Schema Registry**: available on port 8081, used for Avro serialization
+* **AKHQ**: GUI for managing Kafka available at http://localhost:8080
 
 ### Database Migration
 The project uses Flyway. Tables and initial data will be created automatically when each microservice starts.
