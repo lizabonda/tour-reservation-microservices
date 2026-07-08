@@ -1,6 +1,8 @@
 ## 1. Project Overview
 
-This project is a travel agency application built with Java and Spring Boot. The application consists of several microservices:
+This project is a microservices-based evolution of the **tour-reservation-rest-api** project. It represents the transition from a monolithic architecture to a distributed system to demonstrate skills in microservices, asynchronous communication via Kafka.
+
+The application consists of several microservices:
 * **user-service**: manages user profiles, persons, and authentication
 * **tour-service**: manages tours, tour details, tour capacity, activities and trips
 * **booking-service**: handles booking creation, price calculation, booking state changes and communication with other services
@@ -120,45 +122,14 @@ Detailed request examples, including request bodies, headers and Basic Auth conf
 | :--- | :--- | :--- |
 | Find or create persons | POST | http://localhost:8765/users/find-or-create |
 
-## 5. Use cases
-
-* **UC1: Create Accommodation**
-    * **Description**: administrator can create a new accommodation in the system.
-    * **Endpoint**: `POST http://localhost:8765/accommodations`
-    * **Implemented in code**: `AccommodationService`
-* **UC2: Calculate Price**
-    * **Description**: user can calculate the total price of accommodation based on selected dates and reservation details.
-    * **Endpoint**: `POST http://localhost:8765/reservations/calculate-price`
-    * **Implemented in code**: `AccommodationService`
-* **UC3: Create Booking**
-    * **Description**: user can create a new booking for selected accommodation and tour.
-    * **Endpoint**: `POST http://localhost:8765/api/bookings`
-    * **Implemented in code**: `BookingService`
-* **UC4: Get Booking by ID**
-    * **Description**: user or administrator can get detailed information about a specific booking using its ID.
-    * **Endpoint**: `GET http://localhost:8765/api/bookings/{id}`
-    * **Implemented in code**: `BookingService`
-* **UC5: Delete Booking**
-    * **Description**: user can cancel or delete an existing booking.
-    * **Endpoint**: `DELETE http://localhost:8765/api/bookings/user/{id}`
-    * **Implemented in code**: `BookingService`
-* **UC6: Delete Tour**
-    * **Description**: administrator can delete an existing tour from the system
-    * **Endpoint**: `DELETE http://localhost:8765/tours/{id}`
-    * **Implemented in code**: `TourService`
-* **UC7: Find or Create Person**
-    * **Description**: the system can find an existing person by provided user data or create a new person if they do not already exist.
-    * **Endpoint**: `POST http://localhost:8765/users/find-or-create`
-    * **Implemented in code**: `UserService`
-
-## 6. Cache
+## 5. Cache
 The project uses passive caching in the Tour service. Cache is not filled automatically in advance.
 
 **GET endpoints using cache:**
 * `GET http://localhost:8765/tours/{id}`
 * `GET http://localhost:8765/tours/date?startDate={startDate}&endDate={endDate}`
 
-## 7. Kafka
+## 6. Kafka
 Pro monitoring Kafky se používá AKHQ UI, které je dostupné na adrese http://localhost:8080. Tento nástroj slouží ke kontrole topiců a zpráv v rámci vývoje.
 
 | Flow | Producer | Topic | Consumer | How to trigger |
@@ -169,35 +140,3 @@ Pro monitoring Kafky se používá AKHQ UI, které je dostupné na adrese http:/
 | Tour cancellation | tour-service | tour-cancelled | booking-service | `DELETE http://localhost:8765/tours/{id}` |
 | Accommodation cancellation | accommodation-service | accommodation-cancel | booking-service | `DELETE http://localhost:8765/accommodations/{id}` |
 
-## 8. Design patterns
-
-| Pattern | Classes | Purpose |
-| :--- | :--- | :--- |
-| Builder | `LoggerBuilder` | Step-by-step creation of log messages in API Gateway |
-| State | `BookingState`, `CreatedState`, `PaidState`, `CancelledState` | Managing the lifecycle and statuses of bookings |
-| Strategy | `DiscountStrategy`, `EarlyBookingDiscountStrategy`, `LastMinuteDiscountStrategy`, `NoDiscountStrategy` | Calculation of different types of discounts for bookings |
-| Factory | `BookingStateFactory` | Creating state instances based on the booking status |
-| Facade | `BookingManagerFacade` | Manages the booking workflow |
-
-## 9. Security
-Security is used to protect REST endpoints by roles and to forward the `Authorization` header between services through a Feign interceptor.
-
-The project uses Spring Security with HTTP Basic Authentication.
-
-**Roles:**
-* **Customer** - Username: `customer` | Password: `password`
-* **Admin** - Username: `admin` | Password: `admin`
-
-Security configuration is implemented in `SecurityConfig` classes in the microservices.
-
-## 10. Elasticsearch
-Elasticsearch is not implemented.
-
-## 11. Interceptor
-* **Type**: Feign `RequestInterceptor` and Spring Cloud Gateway `GlobalFilter`.
-* **Location**:
-    * `cz.cvut.fel.nss.booking.config.SecurityConfig` (Feign)
-    * `cz.cvut.fel.nss.apigateway.interceptor.LoggerInterceptor` (Gateway)
-* **Purpose**:
-    * **Feign interceptor**: Automatically forwards the `Authorization` header from the incoming request to downstream microservice calls.
-    * **Logger interceptor**: Logs incoming request details (URI, Method, Headers) and outgoing response status codes in the API Gateway using the Builder pattern (`LoggerBuilder`).
