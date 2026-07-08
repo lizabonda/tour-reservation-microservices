@@ -27,10 +27,10 @@ Before starting the microservices, you need to start the infrastructure. The pro
    ```
 
 This will start:
-* **PostgreSQL**: available on port `5433`
-* **Kafka**: broker available on port `9092`
-* **Schema Registry**: available on port `8081`, used for Avro serialization
-* **AKHQ**: GUI for managing Kafka, available at http://localhost:8080
+* **PostgreSQL**: available on port
+* **Kafka**: broker available on port
+* **Schema Registry**: available on port
+* **AKHQ**: GUI for managing Kafka
 
 ### Database Migration
 The project uses Flyway. Tables and initial data will be created automatically when each microservice starts.
@@ -41,6 +41,7 @@ The project uses Flyway. Tables and initial data will be created automatically w
    mvn clean install
    ```
 2. **Pořadí spouštění (IntelliJ IDEA Quick Run)**:
+
    Postupujte podle pořadí v README:
     * `DiscoveryServerApplication`
     * `ApiGatewayApplication`
@@ -77,15 +78,6 @@ All databases run within a single PostgreSQL container started via Docker Compos
    **Important**: Data initialization, meaning the creation of tables and filling them with test records, is performed automatically by Flyway immediately after each service starts. You do not need to run SQL scripts manually.
 
 3. **Connect the database in IntelliJ IDEA**
-   To view the data directly in the IDE, follow these steps:
-    * Open the **Database** tab, usually on the right, and click `+` → `Data Source` → `PostgreSQL`.
-    * Fill in the connection parameters:
-        * **Host**: `localhost`
-        * **Port**: `5433`
-        * **User**: `postgres`
-        * **Password**: `123456`
-    * In the **Database** field, enter the name of the specific database: `user_db`, `accommodation_db`, `tour_db`, or `booking_db`.
-    * Click **Test Connection**, then click **OK**. Now you can see the tables and data inserted by Flyway.
 
 ## 4. Endpoints to call
 Each database is pre-initialized with 10 records (via Flyway). Therefore, when testing endpoints that require an ID (e.g., `{id}`), you can safely use any value from 1 to 10.
