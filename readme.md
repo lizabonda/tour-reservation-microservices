@@ -42,7 +42,7 @@ The project uses Flyway. Tables and initial data will be created automatically w
    ```
 2. **Pořadí spouštění (IntelliJ IDEA Quick Run)**:
 
-   Postupujte podle pořadí v README:
+   Postupujte podle pořadí:
     * `DiscoveryServerApplication`
     * `ApiGatewayApplication`
     * Všechny ostatní (`UserServiceApplication`, `TourServiceApplication`,`AccommodationServiceApplication`,`BookingServiceApplication` )
@@ -77,7 +77,7 @@ All databases run within a single PostgreSQL container started via Docker Compos
 
    **Important**: Data initialization, meaning the creation of tables and filling them with test records, is performed automatically by Flyway immediately after each service starts. You do not need to run SQL scripts manually.
 
-3. **Connect the database in IntelliJ IDEA**
+3. Connect the database in IntelliJ IDEA
 
 ## 4. Endpoints to call
 Each database is pre-initialized with 10 records (via Flyway). Therefore, when testing endpoints that require an ID (e.g., `{id}`), you can safely use any value from 1 to 10.
